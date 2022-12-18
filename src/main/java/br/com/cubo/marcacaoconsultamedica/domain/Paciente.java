@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,8 +19,8 @@ public class Paciente extends Pessoa {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
-	@ManyToOne
-	@JoinColumn(name = "tipo_plano_id", referencedColumnName = "id")
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "tipo_plano_id")
 	private TipoPlano tipoPlano;
 	
 	@Column(nullable = false)

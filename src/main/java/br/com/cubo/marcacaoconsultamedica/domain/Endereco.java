@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,4 +41,7 @@ public class Endereco implements Serializable {
 	
 	@Column(nullable = false)
 	private String estado;
+	
+	@OneToOne(mappedBy = "endereco")
+	private Paciente paciente;
 }
