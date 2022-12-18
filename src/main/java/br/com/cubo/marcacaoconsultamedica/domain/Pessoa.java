@@ -1,5 +1,7 @@
 package br.com.cubo.marcacaoconsultamedica.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -14,7 +16,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class Pessoa {
+public abstract class Pessoa implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	@Column(nullable = false)
 	private String nome;
