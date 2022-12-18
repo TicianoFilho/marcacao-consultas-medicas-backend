@@ -9,12 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 
-@Entity(name = "TIPO_PLANO")
-public class TipoPlano implements Serializable {
+@Entity(name = "ESPECIALIDADE")
+public class Especialidade implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
@@ -22,7 +22,6 @@ public class TipoPlano implements Serializable {
 	@Column(nullable = false)
 	private String descricao;
 	
-	@OneToMany(mappedBy = "tipoPlano")
-	private List<Paciente> pacientes;
-
+	@ManyToMany(mappedBy = "especialidades")
+	private List<Medico> medicos;
 }
