@@ -11,6 +11,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "TIPO_PLANO")
 public class TipoPlano implements Serializable {
 	private static final long serialVersionUID = 1L;
