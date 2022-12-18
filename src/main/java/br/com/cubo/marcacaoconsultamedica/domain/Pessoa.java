@@ -1,7 +1,10 @@
 package br.com.cubo.marcacaoconsultamedica.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +22,8 @@ public abstract class Pessoa {
 	@Column(nullable = false)
 	private String cpf;
 	
-	@Column(nullable = false)
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "endereco_id", referencedColumnName = "id", nullable = false)
 	private Endereco endereco;
 	
 	private String telefone;
