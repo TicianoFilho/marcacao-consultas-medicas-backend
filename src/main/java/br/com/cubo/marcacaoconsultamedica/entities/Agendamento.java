@@ -7,12 +7,15 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import br.com.cubo.marcacaoconsultamedica.enums.SituacaoAgendamento;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +36,10 @@ public class Agendamento implements Serializable {
 	
 	@Column(name = "data_agendada", nullable = false)
 	private LocalDate dataAgendada;
+	
+	@Column(name = "situacao")
+	@Enumerated(EnumType.STRING)
+	private SituacaoAgendamento situacao;
 	
 	@ManyToOne
 	@JoinColumn(name = "paciente_id", referencedColumnName = "id")
