@@ -1,4 +1,4 @@
-package br.com.cubo.marcacaoconsultamedica.entities;
+package br.com.cubo.marcacaoconsultamedica.entities.login;
 
 import java.io.Serializable;
 import java.util.UUID;
