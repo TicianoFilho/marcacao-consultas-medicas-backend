@@ -1,17 +1,15 @@
-package br.com.cubo.marcacaoconsultamedica.domain;
+package br.com.cubo.marcacaoconsultamedica.entities;
 
-import java.io.Serializable;
-import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,21 +20,18 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "MEDICO")
-public class Medico extends Pessoa implements Serializable {
+@Entity(name = "PACIENTE")
+public class Paciente extends Pessoa {
 	private static final long serialVersionUID = 1L;
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
-	@Column(nullable = false)
-	private String crm;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "tipo_plano_id")
+	private TipoPlano tipoPlano;
 	
-	@ManyToMany
-	@JoinTable(
-			name = "medicos_especialidades",
-			joinColumns = @JoinColumn(name = "medico_id"),
-			inverseJoinColumns = @JoinColumn(name = "especialidade_id"))
-	private List<Especialidade> especialidades;
+	@Column(nullable = false)
+	private boolean ativo = false;
 }

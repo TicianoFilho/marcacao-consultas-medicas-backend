@@ -1,4 +1,4 @@
-package br.com.cubo.marcacaoconsultamedica.domain;
+package br.com.cubo.marcacaoconsultamedica.entities;
 
 import java.io.Serializable;
 

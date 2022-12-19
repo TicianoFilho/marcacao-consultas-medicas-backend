@@ -1,37 +1,38 @@
-package br.com.cubo.marcacaoconsultamedica.domain;
+package br.com.cubo.marcacaoconsultamedica.entities;
 
+import java.io.Serializable;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "PACIENTE")
-public class Paciente extends Pessoa {
+@Entity(name = "UNIDADE")
+public class Unidade implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "tipo_plano_id")
-	private TipoPlano tipoPlano;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "endereco_id", referencedColumnName = "id")
+	private Endereco endereco;
 	
 	@Column(nullable = false)
-	private boolean ativo = false;
+	private String telefone;
+	
+	private String email;
 }
