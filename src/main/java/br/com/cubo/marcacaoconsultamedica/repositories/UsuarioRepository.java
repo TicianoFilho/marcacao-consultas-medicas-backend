@@ -9,6 +9,6 @@ import br.com.cubo.marcacaoconsultamedica.entities.login.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID>{
 
-	public Optional<Usuario> findByUsername(String username);
-	public Boolean existsByUsername(String username);
+	Optional<Usuario> findByUsername(String username);
+	Boolean existsByUsername(String username);
 }
