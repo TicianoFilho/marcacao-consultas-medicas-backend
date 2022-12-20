@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UnidadeRepository extends JpaRepository<UnidadeRepository, UUID> {
+import br.com.cubo.marcacaoconsultamedica.entities.Unidade;
+
+public interface UnidadeRepository extends JpaRepository<Unidade, UUID> {
 
 }
