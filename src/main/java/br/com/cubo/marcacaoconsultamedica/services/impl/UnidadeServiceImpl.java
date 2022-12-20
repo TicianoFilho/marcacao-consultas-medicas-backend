@@ -18,7 +18,7 @@ public class UnidadeServiceImpl implements UnidadeService {
 	}
 
 	@Override
-	public List<Unidade> unidades() {
+	public List<Unidade> findAll() {
 		return unidadeRepository.findAll();
 	}
 

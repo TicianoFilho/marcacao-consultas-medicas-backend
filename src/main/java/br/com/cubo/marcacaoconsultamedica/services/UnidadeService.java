@@ -6,6 +6,6 @@ import br.com.cubo.marcacaoconsultamedica.entities.Unidade;
 
 public interface UnidadeService {
 
-	public List<Unidade> unidades();
+	public List<Unidade> findAll();
 	
 }
