@@ -1,5 +1,6 @@
 package br.com.cubo.marcacaoconsultamedica.services.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -21,6 +22,18 @@ public class RoleServiceImpl implements RoleService {
 	public Optional<Role> findByDescricao(String descricao) { 
 		return roleRepository.findByDescricao(descricao);
 	}
+
+	@Override
+	public List<Role> findAll() {
+		return roleRepository.findAll();
+	}
+
+	@Override
+	public Role save(Role role) {
+		return roleRepository.save(role);
+	}
+	
+	
 
 	
 }
