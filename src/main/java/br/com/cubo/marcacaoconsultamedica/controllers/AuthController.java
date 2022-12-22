@@ -10,23 +10,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cubo.marcacaoconsultamedica.dtos.AuthResponseDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.UsuarioDto;
+import br.com.cubo.marcacaoconsultamedica.security.JWTGenerator;
 
 @RestController
 @RequestMapping("/api/auth/login")
-public class LoginController {
+public class AuthController {
 	
 	private final AuthenticationManager authenticationManager;
+	private final JWTGenerator jwtGenerator;
 
-	public LoginController(AuthenticationManager authenticationManager) {
+	public AuthController(AuthenticationManager authenticationManager, JWTGenerator jwtGenerator) {
 		this.authenticationManager = authenticationManager;
+		this.jwtGenerator = jwtGenerator;
 	}
 
 	@PostMapping
-	public ResponseEntity<String> login(@RequestBody UsuarioDto usuarioDto) {
+	public ResponseEntity<AuthResponseDto> login(@RequestBody UsuarioDto usuarioDto) {
+		
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(usuarioDto.getUsername(), usuarioDto.getPassword()));
+		
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		return ResponseEntity.ok("Usuário logado com sucesso!");
+		String token = jwtGenerator.generateToken(authentication);
+		return ResponseEntity.ok(new AuthResponseDto(token)); 
 	}
 }
