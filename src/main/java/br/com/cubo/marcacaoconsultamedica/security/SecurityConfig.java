@@ -20,15 +20,20 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
 	private final UserDetailsServiceImpl userDetailService;
+	private final JwtAuthEntryPoint jwtAuthEntryPoint;
 	
-	public SecurityConfig(UserDetailsServiceImpl userDetailService) {
+	public SecurityConfig(UserDetailsServiceImpl userDetailService, JwtAuthEntryPoint jwtAuthEntryPoint) {
 		this.userDetailService = userDetailService;
+		this.jwtAuthEntryPoint = jwtAuthEntryPoint;
 	}
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 			.csrf().disable()
+			.exceptionHandling()
+			.authenticationEntryPoint(jwtAuthEntryPoint)
+			.and()
 			.authorizeRequests()
 			.antMatchers("/api/auth/**").permitAll()
 			.anyRequest().authenticated()
