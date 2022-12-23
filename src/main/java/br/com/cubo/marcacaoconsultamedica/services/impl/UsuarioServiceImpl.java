@@ -32,4 +32,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return usuarioRepository.save(usuario);
 	}
 
+	@Override
+	public void delete(Usuario usuario) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
