@@ -20,8 +20,8 @@ public class UnidadeController {
 		this.unidadeService = unidadeService;
 	}
 	
-	@GetMapping
-	public ResponseEntity<List<Unidade>> findAll() {
-		return ResponseEntity.ok(unidadeService.findAll());
-	}
+//	@GetMapping
+//	public ResponseEntity<List<Unidade>> findAll() {
+//		return ResponseEntity.ok(unidadeService.findAll());
+//	}
 }
