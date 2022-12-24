@@ -1,0 +1,34 @@
+package br.com.cubo.marcacaoconsultamedica.utils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+public class Response<T> {
+
+	private T data;
+	List<String> errors;
+
+	public T getData() {
+		return data;
+	}
+
+	public void setData(T data) {
+		this.data = data;
+	}
+
+	public List<String> getErrors() {
+		if (this.errors == null) {
+			this.errors = new ArrayList<String>();
+		}
+		return errors;
+	}
+
+	public void setErrors(List<String> errors) {
+		this.errors = errors;
+	}
+	
+	
+}
