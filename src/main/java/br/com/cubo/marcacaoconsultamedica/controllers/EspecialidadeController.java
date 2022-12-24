@@ -25,7 +25,7 @@ public class EspecialidadeController {
 	
 	@GetMapping
 	public ResponseEntity<Page<Especialidade>> getAllEspecialidades(
-			@PageableDefault(page = 0, size = 5, sort = "id", direction = Direction.ASC) Pageable pageable) {
+			@PageableDefault(page = 0, size = 5, sort = "id", direction = Direction.ASC) Pageable pageable) throws Exception {
 		return ResponseEntity.status(HttpStatus.OK).body(especialidadeService.findAll(pageable));		
 	}
 	
