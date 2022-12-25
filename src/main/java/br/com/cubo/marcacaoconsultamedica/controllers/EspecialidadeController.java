@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,10 +58,10 @@ public class EspecialidadeController {
 			BindingResult result) {
 		
 		Response<Especialidade> response = new Response<>();
-		if (result.hasErrors()) {
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+		if (existeErroDeValidacao(response, result)) {
 			return ResponseEntity.badRequest().body(response);
 		}
+		
 		Especialidade especialidade = new Especialidade();
 		BeanUtils.copyProperties(especialidadeDto, especialidade);
 		Especialidade newEspecialidade = especialidadeService.save(especialidade);
@@ -69,6 +70,35 @@ public class EspecialidadeController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
+	@PutMapping("/{id}")
+	public ResponseEntity<Response<Especialidade>> updateEspecialidade(@PathVariable(name = "id") UUID id,
+			@RequestBody @Valid EspecialidadeDto especialidadeDto, BindingResult result) {
+		
+		Response<Especialidade> response = new Response<>();
+		if (existeErroDeValidacao(response, result)) {
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		Optional<Especialidade> especialidadeOptional = especialidadeService.findOneById(id);
+		if (!especialidadeOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		Especialidade especialidade = new Especialidade();
+		BeanUtils.copyProperties(especialidadeDto, especialidade);
+		especialidade.setId(especialidadeOptional.get().getId());
+		
+		Especialidade updatedEspecialidade = especialidadeService.save(especialidade);
+		response.setData(updatedEspecialidade);
+		
+		return ResponseEntity.ok(response);
+	}
 	
-	
+	private boolean existeErroDeValidacao(Response<Especialidade> response, BindingResult result) {		
+		if (result.hasErrors()) {
+			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			return true;
+		}
+		return false;
+	}
 }

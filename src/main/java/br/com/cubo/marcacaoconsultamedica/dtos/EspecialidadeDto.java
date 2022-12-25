@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class EspecialidadeDto {
 
-	@NotEmpty
+	@NotEmpty(message = "O campo descrição não pode ser vazio.")
 	private String descricao;
 }
