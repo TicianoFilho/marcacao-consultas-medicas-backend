@@ -26,9 +26,7 @@ public class Especialidade implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String descricao;
 	
-	@ManyToMany(mappedBy = "especialidades")
-	private List<Medico> medicos;
 }
