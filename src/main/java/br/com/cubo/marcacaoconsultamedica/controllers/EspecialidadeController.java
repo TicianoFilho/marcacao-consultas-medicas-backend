@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -92,6 +93,19 @@ public class EspecialidadeController {
 		response.setData(updatedEspecialidade);
 		
 		return ResponseEntity.ok(response);
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteEspecialidade(@PathVariable(name = "id") UUID id) {
+		
+		Optional<Especialidade> especialidadeOptional = especialidadeService.findOneById(id);
+		if (!especialidadeOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		especialidadeService.delete(especialidadeOptional.get());
+		
+		return ResponseEntity.ok(String.format("Especialidade de id=%s excluído com sucesso.", id));
 	}
 	
 	private boolean existeErroDeValidacao(Response<Especialidade> response, BindingResult result) {		
