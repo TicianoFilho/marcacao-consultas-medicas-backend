@@ -7,11 +7,13 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import br.com.cubo.marcacaoconsultamedica.entities.Medico;
 import br.com.cubo.marcacaoconsultamedica.repositories.MedicoRepository;
 import br.com.cubo.marcacaoconsultamedica.services.MedicoService;
 
+@Service
 public class MedicoServiceImpl implements MedicoService {
 
 	private final MedicoRepository medicoRepository;
