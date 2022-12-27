@@ -7,4 +7,7 @@ public class AppMessages {
 	
 	// TipoPlano
 	public static final String TIPO_PLANO_NOT_FOUND = "Tipo de Plano não encontrado.";
+	
+	// Medico
+	public static final String MEDICO_NOT_FOUND = "Médico não encontrado.";
 }

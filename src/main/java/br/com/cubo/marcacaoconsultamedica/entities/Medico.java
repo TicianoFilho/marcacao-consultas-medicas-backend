@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity(name = "MEDICO")
 public class Medico extends Pessoa implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -39,4 +38,8 @@ public class Medico extends Pessoa implements Serializable {
 			joinColumns = @JoinColumn(name = "medico_id"),
 			inverseJoinColumns = @JoinColumn(name = "especialidade_id"))
 	private List<Especialidade> especialidades;
+	
+	public Medico() {
+		this.setEndereco(new Endereco());	
+	}
 }

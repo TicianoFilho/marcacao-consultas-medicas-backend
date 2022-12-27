@@ -7,11 +7,13 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
 import br.com.cubo.marcacaoconsultamedica.repositories.EnderecoRepository;
 import br.com.cubo.marcacaoconsultamedica.services.EnderecoService;
 
+@Service
 public class EnderecoServiceImpl implements EnderecoService {
 
 	private final EnderecoRepository enderecoRepository;
