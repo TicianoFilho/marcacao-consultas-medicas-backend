@@ -87,6 +87,8 @@ public class MedicoController {
 	public ResponseEntity<Response<Medico>> updateMedico(@PathVariable(name = "id") UUID id,
 			@RequestBody @Valid MedicoDto medicoDto, BindingResult result) {
 		
+		// TODO create dto for specific update
+		
 		Response<Medico> response = new Response<>();
 		if (existeErroDeValidacao(response, result)) {
 			return ResponseEntity.badRequest().body(response);
