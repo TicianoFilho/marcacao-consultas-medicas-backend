@@ -1,5 +1,6 @@
 package br.com.cubo.marcacaoconsultamedica.dtos;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.constraints.Email;
@@ -33,7 +34,7 @@ public class MedicoDto {
 	@NotEmpty(message = "O CRM não pode ser vazio.")
 	private String crm;
 	
-	@NotNull(message = "O ID da especialidade não pode ser vazia.")
-	private UUID especialidade_id;
+	@NotNull 
+	private List<UUID> especialidades;
 
 }

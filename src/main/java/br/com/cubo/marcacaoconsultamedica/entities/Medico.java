@@ -1,6 +1,7 @@
 package br.com.cubo.marcacaoconsultamedica.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +17,6 @@ import javax.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -40,6 +40,7 @@ public class Medico extends Pessoa implements Serializable {
 	private List<Especialidade> especialidades;
 	
 	public Medico() {
-		this.setEndereco(new Endereco());	
+		this.setEndereco(new Endereco());
+		this.especialidades = new ArrayList<>();
 	}
 }

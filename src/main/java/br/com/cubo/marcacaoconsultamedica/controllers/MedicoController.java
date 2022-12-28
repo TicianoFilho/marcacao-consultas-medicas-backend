@@ -1,8 +1,10 @@
 package br.com.cubo.marcacaoconsultamedica.controllers;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
@@ -25,9 +27,12 @@ import br.com.cubo.marcacaoconsultamedica.dtos.EnderecoDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.TipoPlanoDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
+import br.com.cubo.marcacaoconsultamedica.entities.Especialidade;
 import br.com.cubo.marcacaoconsultamedica.entities.Medico;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
+import br.com.cubo.marcacaoconsultamedica.exceptions.ResourceNotFoundException;
 import br.com.cubo.marcacaoconsultamedica.services.EnderecoService;
+import br.com.cubo.marcacaoconsultamedica.services.EspecialidadeService;
 import br.com.cubo.marcacaoconsultamedica.services.MedicoService;
 import br.com.cubo.marcacaoconsultamedica.utils.AppMessages;
 import br.com.cubo.marcacaoconsultamedica.utils.Response;
@@ -38,10 +43,12 @@ public class MedicoController {
 
 	private final MedicoService medicoService;
 	private final EnderecoService enderecoService;
+	private final EspecialidadeService especialidadeService;
 
-	public MedicoController(MedicoService medicoService, EnderecoService enderecoService) {
+	public MedicoController(MedicoService medicoService, EnderecoService enderecoService, EspecialidadeService especialidadeService) {
 		this.medicoService = medicoService;
 		this.enderecoService = enderecoService;
+		this.especialidadeService = especialidadeService;
 	}
 	
 	@GetMapping
@@ -61,7 +68,7 @@ public class MedicoController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Response<Medico>> saveMedico(@Valid @RequestBody MedicoDto medicoDto, // TODO see DTO pattern
+	public ResponseEntity<Response<Medico>> saveMedico(@Valid @RequestBody MedicoDto medicoDto,
 			BindingResult result) {
 		
 		Response<Medico> response = new Response<>();
@@ -69,9 +76,13 @@ public class MedicoController {
 			return ResponseEntity.badRequest().body(response);
 		}
 		
-		// TODO implements verification if especialidade exists before saving
+		Medico medico = new Medico();	
 		
-		Medico medico = new Medico();
+		medicoDto.getEspecialidades().forEach(id -> {												// add to entity each especiaildades from dto
+			medico.getEspecialidades().add(especialidadeService.findOneById(id)
+					.orElseThrow(() -> new ResourceNotFoundException(AppMessages.ESPECIALIDADE_NOT_FOUND)));
+		});
+				
 		BeanUtils.copyProperties(medicoDto, medico);
 		BeanUtils.copyProperties(medicoDto.getEndereco(), medico.getEndereco());
 		
