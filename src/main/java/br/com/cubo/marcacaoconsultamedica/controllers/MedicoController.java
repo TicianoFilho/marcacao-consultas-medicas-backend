@@ -1,10 +1,8 @@
 package br.com.cubo.marcacaoconsultamedica.controllers;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
@@ -23,13 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cubo.marcacaoconsultamedica.dtos.EnderecoDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoDto;
-import br.com.cubo.marcacaoconsultamedica.dtos.TipoPlanoDto;
-import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
-import br.com.cubo.marcacaoconsultamedica.entities.Especialidade;
 import br.com.cubo.marcacaoconsultamedica.entities.Medico;
-import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.exceptions.ResourceNotFoundException;
 import br.com.cubo.marcacaoconsultamedica.services.EnderecoService;
 import br.com.cubo.marcacaoconsultamedica.services.EspecialidadeService;
