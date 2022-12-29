@@ -1,6 +1,5 @@
 package br.com.cubo.marcacaoconsultamedica.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,13 +24,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cubo.marcacaoconsultamedica.dtos.EnderecoUpdateDto;
-import br.com.cubo.marcacaoconsultamedica.dtos.EspecialidadeDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
 import br.com.cubo.marcacaoconsultamedica.entities.Especialidade;
 import br.com.cubo.marcacaoconsultamedica.entities.Medico;
-import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.exceptions.ResourceNotFoundException;
 import br.com.cubo.marcacaoconsultamedica.services.EnderecoService;
 import br.com.cubo.marcacaoconsultamedica.services.EspecialidadeService;
@@ -150,7 +147,7 @@ public class MedicoController {
 	}
 	
 	@PutMapping("/{medicoId}/especialidades/{especialidadeId}")
-	public ResponseEntity<List<Especialidade>> addEspecialidades(@PathVariable(name = "medicoId") UUID medicoId,
+	public ResponseEntity<List<Especialidade>> addEspecialidade(@PathVariable(name = "medicoId") UUID medicoId,
 			@PathVariable(name = "especialidadeId") UUID especialidadeId) {
 		
 		Especialidade especialidade = especialidadeService.findOneById(especialidadeId).orElseThrow(
@@ -167,7 +164,23 @@ public class MedicoController {
 		return ResponseEntity.ok(updatedMedicoEspecialidade.getEspecialidades());
 	}
 	
-	// TODO delete especialidade in the list
+	@DeleteMapping("/{medicoId}/especialidades/{especialidadeId}")
+	public ResponseEntity<List<Especialidade>> deleteEspecialidade(@PathVariable(name = "medicoId") UUID medicoId,
+			@PathVariable(name = "especialidadeId") UUID especialidadeId) {
+		
+		Especialidade especialidade = especialidadeService.findOneById(especialidadeId).orElseThrow(
+				() -> new ResourceNotFoundException(AppMessages.ESPECIALIDADE_NOT_FOUND));
+		
+		Optional<Medico> medicoOptional = medicoService.findOneById(medicoId);
+		if (!medicoOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		} 
+		
+		medicoOptional.get().getEspecialidades().remove(especialidade);
+		Medico updatedMedicoEspecialidade = medicoService.save(medicoOptional.get());
+			
+		return ResponseEntity.ok(updatedMedicoEspecialidade.getEspecialidades());
+	}
 	
 	private boolean existeErroDeValidacao(Response<? extends Object> response, BindingResult result) {		
 		if (result.hasErrors()) {
