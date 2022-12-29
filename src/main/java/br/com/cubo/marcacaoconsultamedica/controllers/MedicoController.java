@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cubo.marcacaoconsultamedica.dtos.EnderecoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoUpdateDto;
+import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
 import br.com.cubo.marcacaoconsultamedica.entities.Medico;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.exceptions.ResourceNotFoundException;
@@ -94,25 +96,42 @@ public class MedicoController {
 	public ResponseEntity<Response<MedicoUpdateDto>> updateMedico(@PathVariable(name = "id") UUID id,
 			@RequestBody @Valid MedicoUpdateDto medicoUpdateDto, BindingResult result) {
 		
-		Response<MedicoUpdateDto> response = new Response<>();
-		if (existeErroDeValidacao(response, result)) {
-			return ResponseEntity.badRequest().body(response);
-		}
-		
 		Optional<Medico> medicoOptional = medicoService.findOneById(id);
 		if (medicoOptional.isPresent()) {
-			updateFields(medicoOptional.get(), medicoUpdateDto);
+			updateMedicoFields(medicoOptional.get(), medicoUpdateDto);
 		} else {
 			return ResponseEntity.notFound().build();
 		}
 		
 		Medico updatedMedico = medicoService.save(medicoOptional.get());
 		BeanUtils.copyProperties(updatedMedico, medicoUpdateDto);
+		
+		Response<MedicoUpdateDto> response = new Response<>();
 		response.setData(medicoUpdateDto);
 		
 		return ResponseEntity.ok(response);
 	}
 	
+	@PutMapping("/{id}/endereco")
+	public ResponseEntity<Response<EnderecoUpdateDto>> updateEnderecoMedico(@PathVariable(name = "id") UUID id,
+			@RequestBody @Valid EnderecoUpdateDto enderecoUpdateDto, BindingResult result) {
+		
+		Optional<Medico> medicoOptional = medicoService.findOneById(id);
+		if (!medicoOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		} 
+		
+		updateEnderecoMedicoFields(medicoOptional.get().getEndereco(), enderecoUpdateDto);
+		
+		Endereco updatedEndereco = enderecoService.save(medicoOptional.get().getEndereco());
+		BeanUtils.copyProperties(updatedEndereco, enderecoUpdateDto);
+		
+		Response<EnderecoUpdateDto> response = new Response<>();
+		response.setData(enderecoUpdateDto);
+		
+		return ResponseEntity.ok(response);
+	}
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteMedico(@PathVariable(name = "id") UUID id) {
 		
@@ -134,7 +153,7 @@ public class MedicoController {
 		return false;
 	}
 	
-	private void updateFields(Medico medico, MedicoUpdateDto medicoUpdateDto) {
+	private void updateMedicoFields(Medico medico, MedicoUpdateDto medicoUpdateDto) {
 		if (medicoUpdateDto.getNome() != null) {
 			medico.setNome(medicoUpdateDto.getNome());
 		}
@@ -150,5 +169,27 @@ public class MedicoController {
 		if (medicoUpdateDto.getTelefone() != null) {
 			medico.setTelefone(medicoUpdateDto.getTelefone());
 		}
+	}
+	
+	private void updateEnderecoMedicoFields(Endereco endereco, EnderecoUpdateDto enderecoUpdateDto) {
+		if (enderecoUpdateDto.getCep() != null) {
+			endereco.setCep(enderecoUpdateDto.getCep());
+		}
+		if (enderecoUpdateDto.getLogradouro() != null) {
+			endereco.setLogradouro(enderecoUpdateDto.getLogradouro());
+		}
+		if (enderecoUpdateDto.getNumero() != null) {
+			endereco.setNumero(enderecoUpdateDto.getNumero());
+		}
+		if (enderecoUpdateDto.getBairro() != null) {
+			endereco.setBairro(enderecoUpdateDto.getBairro());
+		}
+		if (enderecoUpdateDto.getCidade() != null) {
+			endereco.setCidade(enderecoUpdateDto.getCidade());
+		}
+		if (enderecoUpdateDto.getEstado() != null) {
+			endereco.setEstado(enderecoUpdateDto.getEstado());
+		}
+		
 	}
 }
