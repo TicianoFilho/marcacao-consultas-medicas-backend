@@ -99,7 +99,7 @@ public class MedicoController {
 		
 		Optional<Medico> medicoOptional = medicoService.findOneById(id);
 		if (medicoOptional.isPresent()) {
-			updateMedicoFields(medicoOptional.get(), medicoUpdateDto);
+			updateMedicoFields(medicoUpdateDto, medicoOptional.get());
 		} else {
 			return ResponseEntity.notFound().build();
 		}
@@ -122,7 +122,7 @@ public class MedicoController {
 			return ResponseEntity.notFound().build();
 		} 
 		
-		updateEnderecoMedicoFields(medicoOptional.get().getEndereco(), enderecoUpdateDto);
+		updateEnderecoMedicoFields(enderecoUpdateDto, medicoOptional.get().getEndereco());
 		
 		Endereco updatedEndereco = enderecoService.save(medicoOptional.get().getEndereco());
 		BeanUtils.copyProperties(updatedEndereco, enderecoUpdateDto);
@@ -190,7 +190,7 @@ public class MedicoController {
 		return false;
 	}
 	
-	private void updateMedicoFields(Medico medico, MedicoUpdateDto medicoUpdateDto) {
+	private void updateMedicoFields(MedicoUpdateDto medicoUpdateDto, Medico medico) {
 		if (medicoUpdateDto.getNome() != null) {
 			medico.setNome(medicoUpdateDto.getNome());
 		}
@@ -208,7 +208,7 @@ public class MedicoController {
 		}
 	}
 	
-	private void updateEnderecoMedicoFields(Endereco endereco, EnderecoUpdateDto enderecoUpdateDto) {
+	private void updateEnderecoMedicoFields(EnderecoUpdateDto enderecoUpdateDto, Endereco endereco) {
 		if (enderecoUpdateDto.getCep() != null) {
 			endereco.setCep(enderecoUpdateDto.getCep());
 		}

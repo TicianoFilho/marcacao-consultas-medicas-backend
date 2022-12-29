@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -73,11 +74,46 @@ public class UnidadeController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
+	@PutMapping("/{id}")
+	public ResponseEntity<Response<UnidadeDto>> updateUnidade(@PathVariable(name = "id") UUID id,
+			@RequestBody @Valid UnidadeDto unidadeDto, BindingResult result) {
+		
+		Response<UnidadeDto> response = new Response<>();
+		if (existeErroDeValidacao(response, result)) {
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		Optional<Unidade> unidadeOptional = unidadeService.findOneById(id);
+		if (unidadeOptional.isPresent()) {
+			updateUnidadeFields(unidadeDto, unidadeOptional.get());
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+		
+		Unidade updatedUnidade = unidadeService.save(unidadeOptional.get());
+		BeanUtils.copyProperties(updatedUnidade, unidadeDto);
+		response.setData(unidadeDto);
+		
+		return ResponseEntity.ok(response);
+	}
+	
 	private boolean existeErroDeValidacao(Response<? extends Object> response, BindingResult result) {		
 		if (result.hasErrors()) {
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return true;
 		}
 		return false;
+	}
+	
+	private void updateUnidadeFields(UnidadeDto unidadeDto, Unidade unidade) {
+		if (unidadeDto.getNome() != null) {
+			unidade.setNome(unidadeDto.getNome());
+		}
+		if (unidadeDto.getTelefone() != null) {
+			unidade.setTelefone(unidadeDto.getTelefone());
+		}
+		if (unidadeDto.getEmail() != null) {
+			unidade.setEmail(unidadeDto.getEmail());
+		}
 	}
 }
