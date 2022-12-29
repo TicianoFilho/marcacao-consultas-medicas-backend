@@ -14,4 +14,6 @@ public interface EspecialidadeService {
 	Page<Especialidade> findAll(Pageable pageable);
 	Optional<Especialidade> findOneById(UUID id);
 	void delete(Especialidade especialidade);	
+	
+	boolean exists(UUID id);
 }

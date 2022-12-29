@@ -45,4 +45,9 @@ public class EspecialidadeServiceImpl implements EspecialidadeService {
 		
 	}
 
+	@Override
+	public boolean exists(UUID id) {
+		return especialidadeRepository.existsById(id);
+	}
+
 }

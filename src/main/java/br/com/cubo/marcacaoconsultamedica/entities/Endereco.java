@@ -42,9 +42,9 @@ public class Endereco implements Serializable {
 	@Column(nullable = false)
 	private String estado;
 	
-	@OneToOne(mappedBy = "endereco")
-	private Paciente paciente;
-	
-	@OneToOne(mappedBy = "endereco")
-	private Unidade unidade;
+//	@OneToOne(mappedBy = "endereco")
+//	private Paciente paciente;
+//	
+//	@OneToOne(mappedBy = "endereco")
+//	private Unidade unidade;
 }
