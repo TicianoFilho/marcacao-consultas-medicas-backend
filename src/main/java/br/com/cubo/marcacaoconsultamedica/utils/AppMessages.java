@@ -10,4 +10,7 @@ public class AppMessages {
 	
 	// Medico
 	public static final String MEDICO_NOT_FOUND = "Médico não encontrado.";
+	
+	// Unidade
+	public static final String UNIDADE_NOT_FOUND = "Unidade não encontrada.";
 }
