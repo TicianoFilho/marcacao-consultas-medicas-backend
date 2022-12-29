@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Medico;
+import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.exceptions.ResourceNotFoundException;
 import br.com.cubo.marcacaoconsultamedica.services.EnderecoService;
 import br.com.cubo.marcacaoconsultamedica.services.EspecialidadeService;
@@ -111,7 +113,20 @@ public class MedicoController {
 		return ResponseEntity.ok(response);
 	}
 	
-	private boolean existeErroDeValidacao(Response<?> response, BindingResult result) {		
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteMedico(@PathVariable(name = "id") UUID id) {
+		
+		Optional<Medico> medicoOptional = medicoService.findOneById(id);
+		if (!medicoOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		medicoService.delete(medicoOptional.get());
+		
+		return ResponseEntity.ok(String.format("O médico de id=%s foi excluído com sucesso.", id));
+	}
+	
+	private boolean existeErroDeValidacao(Response<? extends Object> response, BindingResult result) {		
 		if (result.hasErrors()) {
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return true;
