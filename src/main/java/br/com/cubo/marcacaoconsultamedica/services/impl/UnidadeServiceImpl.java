@@ -1,6 +1,5 @@
 package br.com.cubo.marcacaoconsultamedica.services.impl;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,25 +22,22 @@ public class UnidadeServiceImpl implements UnidadeService {
 
 	@Override
 	public Unidade save(Unidade unidade) {
-		// TODO Auto-generated method stub
-		return null;
+		return unidadeRepository.save(unidade);
 	}
 
 	@Override
 	public Page<Unidade> findAll(Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
+		return unidadeRepository.findAll(pageable);
 	}
 
 	@Override
 	public Optional<Unidade> findOneById(UUID id) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		return unidadeRepository.findById(id);
 	}
 
 	@Override
 	public void delete(Unidade unidade) {
-		// TODO Auto-generated method stub
+		unidadeRepository.delete(unidade);
 		
 	}
 
