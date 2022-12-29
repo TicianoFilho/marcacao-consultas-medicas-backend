@@ -14,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -121,6 +122,19 @@ public class UnidadeController {
 		response.setData(enderecoUpdateDto);
 		
 		return ResponseEntity.ok(response);
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteUnidade(@PathVariable(name = "id") UUID id) {
+		
+		Optional<Unidade> unidadeOptional = unidadeService.findOneById(id);
+		if (!unidadeOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		unidadeService.delete(unidadeOptional.get());
+		
+		return ResponseEntity.ok(String.format("Unidade de id=%s excluído com sucesso.", id));
 	}
 	
 	private boolean existeErroDeValidacao(Response<? extends Object> response, BindingResult result) {		
