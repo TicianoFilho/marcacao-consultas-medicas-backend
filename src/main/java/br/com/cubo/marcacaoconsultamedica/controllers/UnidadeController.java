@@ -22,10 +22,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cubo.marcacaoconsultamedica.dtos.EnderecoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.TipoPlanoDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.UnidadeDto;
+import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
+import br.com.cubo.marcacaoconsultamedica.entities.Medico;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.entities.Unidade;
+import br.com.cubo.marcacaoconsultamedica.services.EnderecoService;
 import br.com.cubo.marcacaoconsultamedica.services.UnidadeService;
 import br.com.cubo.marcacaoconsultamedica.utils.AppMessages;
 import br.com.cubo.marcacaoconsultamedica.utils.Response;
@@ -35,9 +39,11 @@ import br.com.cubo.marcacaoconsultamedica.utils.Response;
 public class UnidadeController {
 
 	private final UnidadeService unidadeService;
+	private final EnderecoService enderecoService;
 
-	public UnidadeController(UnidadeService unidadeService) {
+	public UnidadeController(UnidadeService unidadeService, EnderecoService enderecoService) {
 		this.unidadeService = unidadeService;
+		this.enderecoService = enderecoService;
 	}
 
 	@GetMapping
@@ -97,6 +103,26 @@ public class UnidadeController {
 		return ResponseEntity.ok(response);
 	}
 	
+	@PutMapping("/{id}/endereco")
+	public ResponseEntity<Response<EnderecoUpdateDto>> updateEnderecoMedico(@PathVariable(name = "id") UUID id,
+			@RequestBody @Valid EnderecoUpdateDto enderecoUpdateDto, BindingResult result) {
+		
+		Optional<Unidade> unidadeOptional = unidadeService.findOneById(id);
+		if (!unidadeOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		} 
+		
+		updateEnderecoUnidadeFields(enderecoUpdateDto, unidadeOptional.get().getEndereco());
+		
+		Endereco updatedEndereco = enderecoService.save(unidadeOptional.get().getEndereco());
+		BeanUtils.copyProperties(updatedEndereco, enderecoUpdateDto);
+		
+		Response<EnderecoUpdateDto> response = new Response<>();
+		response.setData(enderecoUpdateDto);
+		
+		return ResponseEntity.ok(response);
+	}
+	
 	private boolean existeErroDeValidacao(Response<? extends Object> response, BindingResult result) {		
 		if (result.hasErrors()) {
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
@@ -115,5 +141,27 @@ public class UnidadeController {
 		if (unidadeDto.getEmail() != null) {
 			unidade.setEmail(unidadeDto.getEmail());
 		}
+	}
+	
+	private void updateEnderecoUnidadeFields(EnderecoUpdateDto enderecoUpdateDto, Endereco endereco) {
+		if (enderecoUpdateDto.getCep() != null) {
+			endereco.setCep(enderecoUpdateDto.getCep());
+		}
+		if (enderecoUpdateDto.getLogradouro() != null) {
+			endereco.setLogradouro(enderecoUpdateDto.getLogradouro());
+		}
+		if (enderecoUpdateDto.getNumero() != null) {
+			endereco.setNumero(enderecoUpdateDto.getNumero());
+		}
+		if (enderecoUpdateDto.getBairro() != null) {
+			endereco.setBairro(enderecoUpdateDto.getBairro());
+		}
+		if (enderecoUpdateDto.getCidade() != null) {
+			endereco.setCidade(enderecoUpdateDto.getCidade());
+		}
+		if (enderecoUpdateDto.getEstado() != null) {
+			endereco.setEstado(enderecoUpdateDto.getEstado());
+		}
+		
 	}
 }
