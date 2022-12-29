@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.MedicoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Medico;
 import br.com.cubo.marcacaoconsultamedica.exceptions.ResourceNotFoundException;
 import br.com.cubo.marcacaoconsultamedica.services.EnderecoService;
@@ -88,36 +89,51 @@ public class MedicoController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Response<Medico>> updateMedico(@PathVariable(name = "id") UUID id,
-			@RequestBody @Valid MedicoDto medicoDto, BindingResult result) {
+	public ResponseEntity<Response<MedicoUpdateDto>> updateMedico(@PathVariable(name = "id") UUID id,
+			@RequestBody @Valid MedicoUpdateDto medicoUpdateDto, BindingResult result) {
 		
-		// TODO create dto for specific update
-		
-		Response<Medico> response = new Response<>();
+		Response<MedicoUpdateDto> response = new Response<>();
 		if (existeErroDeValidacao(response, result)) {
 			return ResponseEntity.badRequest().body(response);
 		}
 		
 		Optional<Medico> medicoOptional = medicoService.findOneById(id);
-		if (!medicoOptional.isPresent()) {
+		if (medicoOptional.isPresent()) {
+			updateFields(medicoOptional.get(), medicoUpdateDto);
+		} else {
 			return ResponseEntity.notFound().build();
 		}
 		
-		Medico medico = new Medico();
-		BeanUtils.copyProperties(medicoDto, medico);
-		medico.setId(medicoOptional.get().getId());
-		
-		Medico updatedMedico = medicoService.save(medico);
-		response.setData(updatedMedico);
+		Medico updatedMedico = medicoService.save(medicoOptional.get());
+		BeanUtils.copyProperties(updatedMedico, medicoUpdateDto);
+		response.setData(medicoUpdateDto);
 		
 		return ResponseEntity.ok(response);
 	}
 	
-	private boolean existeErroDeValidacao(Response<Medico> response, BindingResult result) {		
+	private boolean existeErroDeValidacao(Response<?> response, BindingResult result) {		
 		if (result.hasErrors()) {
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return true;
 		}
 		return false;
+	}
+	
+	private void updateFields(Medico medico, MedicoUpdateDto medicoUpdateDto) {
+		if (medicoUpdateDto.getNome() != null) {
+			medico.setNome(medicoUpdateDto.getNome());
+		}
+		if (medicoUpdateDto.getCpf() != null) {
+			medico.setCpf(medicoUpdateDto.getCpf());
+		}
+		if (medicoUpdateDto.getEmail() != null) {
+			medico.setEmail(medicoUpdateDto.getEmail());
+		}
+		if (medicoUpdateDto.getCrm() != null) {
+			medico.setCrm(medicoUpdateDto.getCrm());
+		}
+		if (medicoUpdateDto.getTelefone() != null) {
+			medico.setTelefone(medicoUpdateDto.getTelefone());
+		}
 	}
 }

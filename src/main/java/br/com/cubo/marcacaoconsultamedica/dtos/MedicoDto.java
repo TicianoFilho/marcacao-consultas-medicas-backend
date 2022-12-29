@@ -21,9 +21,6 @@ public class MedicoDto {
 	@NotEmpty(message = "O CPF não pode ser vazio.")
 	private String cpf;
 	
-	@NotNull(message = "O endereço não pode ser vazio.")
-	private EnderecoDto endereco;
-	
 	@NotEmpty(message = "O telefone não pode ser vazio.")
 	private String telefone;
 	
@@ -33,6 +30,9 @@ public class MedicoDto {
 	
 	@NotEmpty(message = "O CRM não pode ser vazio.")
 	private String crm;
+	
+	@NotNull(message = "O endereço não pode ser vazio.")
+	private EnderecoDto endereco;
 	
 	@NotNull 
 	private List<UUID> especialidades;
