@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity(name = "UNIDADE")
 public class Unidade implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -35,4 +34,8 @@ public class Unidade implements Serializable {
 	private String telefone;
 	
 	private String email;
+	
+	public Unidade() {
+		this.endereco = new Endereco();
+	}
 }

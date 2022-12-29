@@ -4,21 +4,30 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cubo.marcacaoconsultamedica.dtos.TipoPlanoDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.UnidadeDto;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.entities.Unidade;
 import br.com.cubo.marcacaoconsultamedica.services.UnidadeService;
 import br.com.cubo.marcacaoconsultamedica.utils.AppMessages;
+import br.com.cubo.marcacaoconsultamedica.utils.Response;
 
 @RestController
 @RequestMapping("/api/unidades")
@@ -44,5 +53,31 @@ public class UnidadeController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(AppMessages.UNIDADE_NOT_FOUND);
 		}
 		return ResponseEntity.ok(unidadeOptional.get());
+	}
+	
+	@PostMapping
+	public ResponseEntity<Response<Unidade>> saveUnidade(@Valid @RequestBody UnidadeDto unidadeDto,
+			BindingResult result) {
+		
+		Response<Unidade> response = new Response<>();
+		if (existeErroDeValidacao(response, result)) {
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		Unidade unidade = new Unidade();
+		BeanUtils.copyProperties(unidadeDto, unidade);
+		BeanUtils.copyProperties(unidadeDto.getEndereco(), unidade.getEndereco());
+		Unidade newUnidade = unidadeService.save(unidade);
+		response.setData(newUnidade);
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+	
+	private boolean existeErroDeValidacao(Response<? extends Object> response, BindingResult result) {		
+		if (result.hasErrors()) {
+			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			return true;
+		}
+		return false;
 	}
 }

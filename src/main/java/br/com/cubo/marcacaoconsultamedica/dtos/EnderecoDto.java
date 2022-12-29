@@ -1,6 +1,7 @@
 package br.com.cubo.marcacaoconsultamedica.dtos;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import lombok.Data;
 public class EnderecoDto {
 
 	@NotEmpty(message = "O CEP não pode ser vazio.")
+	@Pattern(regexp = "[0-9]{5}-[0-9]{3}")
 	private String cep;
 	
 	@NotEmpty(message = "O logradouro não pode ser vazio.")
