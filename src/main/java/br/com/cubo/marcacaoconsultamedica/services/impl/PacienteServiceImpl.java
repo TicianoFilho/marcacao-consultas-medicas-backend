@@ -3,6 +3,8 @@ package br.com.cubo.marcacaoconsultamedica.services.impl;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class PacienteServiceImpl implements PacienteService {
 	}
 
 	@Override
+	@Transactional
 	public Paciente save(Paciente paciente) {
 		return pacienteRepository.save(paciente);
 	}
@@ -36,6 +39,7 @@ public class PacienteServiceImpl implements PacienteService {
 	}
 
 	@Override
+	@Transactional
 	public void delete(Paciente paciente) {
 		pacienteRepository.delete(paciente);
 		

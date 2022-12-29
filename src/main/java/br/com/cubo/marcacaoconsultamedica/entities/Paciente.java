@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity(name = "PACIENTE")
 public class Paciente extends Pessoa {
 	private static final long serialVersionUID = 1L;
@@ -34,4 +33,8 @@ public class Paciente extends Pessoa {
 	
 	@Column(nullable = false)
 	private boolean ativo = false;
+	
+	public Paciente() {
+		this.setEndereco(new Endereco());
+	}
 }
