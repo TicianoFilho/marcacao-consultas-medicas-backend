@@ -29,7 +29,4 @@ public class TipoPlano implements Serializable {
 	@Column(nullable = false)
 	private String descricao;
 	
-	@OneToMany(mappedBy = "tipoPlano")
-	private List<Paciente> pacientes;
-
 }

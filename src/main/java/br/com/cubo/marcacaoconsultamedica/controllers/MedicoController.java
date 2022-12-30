@@ -85,7 +85,6 @@ public class MedicoController {
 		BeanUtils.copyProperties(medicoDto, medico);
 		BeanUtils.copyProperties(medicoDto.getEndereco(), medico.getEndereco());
 		
-		medico.setEndereco(enderecoService.save(medico.getEndereco()));
 		Medico newMedico = medicoService.save(medico);
 		
 		response.setData(newMedico);
