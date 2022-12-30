@@ -23,7 +23,7 @@ public class MedicoDto {
 	private String cpf;
 	
 	@NotEmpty(message = "O telefone não pode ser vazio.")
-	@Pattern(regexp = "(\\(?\\d{2}\\)?\\s)?(\\d{4,5}\\-\\d{4})", message = "Formato do tefelone inválido.")
+	@Pattern(regexp = "^\\([0-9]{2}\\) [0-9]?[0-9]{5}-[0-9]{4}$", message = "Formato do tefelone inválido. Ex: (xx) xxxxx-xxxx")
 	private String telefone;
 	
 	@Email(message = "Email inválido.")

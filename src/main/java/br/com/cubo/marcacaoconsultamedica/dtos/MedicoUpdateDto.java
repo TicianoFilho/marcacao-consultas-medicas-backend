@@ -15,7 +15,7 @@ public class MedicoUpdateDto {
 	@CPF(message = "O CPF informado é inválido.")
 	private String cpf;
 	
-	@Pattern(regexp = "^\\([0-9]{2}\\) [0-9]?[0-9]{5}-[0-9]{4}$", message = "Formato do tefelone inválido.")
+	@Pattern(regexp = "^\\([0-9]{2}\\) [0-9]?[0-9]{5}-[0-9]{4}$", message = "Formato do tefelone inválido. Ex: (xx) xxxxx-xxxx")
 	private String telefone;
 	
 	@Email(message = "O email informado é inválido.")
