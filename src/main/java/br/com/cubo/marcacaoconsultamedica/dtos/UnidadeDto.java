@@ -13,7 +13,7 @@ public class UnidadeDto {
 	@Pattern(regexp = "(\\(?\\d{2}\\)?\\s)?(\\d{4,5}\\-\\d{4})", message = "Formato do tefelone inválido.")
 	private String telefone;
 	
-	@Email
+	@Email(message = "Email inválido.")
 	private String email;
 	
 	private EnderecoDto endereco;

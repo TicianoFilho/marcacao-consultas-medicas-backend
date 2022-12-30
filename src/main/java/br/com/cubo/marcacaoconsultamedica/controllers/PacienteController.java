@@ -16,12 +16,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.MedicoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.PacienteUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Medico;
 import br.com.cubo.marcacaoconsultamedica.entities.Paciente;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
@@ -82,12 +85,52 @@ public class PacienteController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
+	@PutMapping("/{id}")
+	public ResponseEntity<Response<PacienteUpdateDto>> updatePaciente(@PathVariable(name = "id") UUID id,
+			@RequestBody @Valid PacienteUpdateDto pacienteUpdateDto, BindingResult result) {
+		
+		Response<PacienteUpdateDto> response = new Response<>();	
+		Paciente paciente = null;
+		
+		if (!existeErroDeValidacao(response, result)) {
+			paciente = pacienteService.findOneById(id).orElseThrow(
+					() -> new ResourceNotFoundException(AppMessages.PACIENTE_NOT_FOUND));
+		} else {
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		updatePacienteFields(pacienteUpdateDto, paciente);
+		
+		Paciente updatedPaciente = pacienteService.save(paciente);
+		BeanUtils.copyProperties(updatedPaciente, pacienteUpdateDto);
+		
+		
+		response.setData(pacienteUpdateDto);
+		
+		return ResponseEntity.ok(response);
+	}
+	
 	private boolean existeErroDeValidacao(Response<? extends Object> response, BindingResult result) {		
 		if (result.hasErrors()) {
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return true;
 		}
 		return false;
+	}
+	
+	private void updatePacienteFields(PacienteUpdateDto pacienteUpdateDto, Paciente paciente) {
+		if (pacienteUpdateDto.getNome() != null) {
+			paciente.setNome(pacienteUpdateDto.getNome());
+		}
+		if (pacienteUpdateDto.getCpf() != null) {
+			paciente.setCpf(pacienteUpdateDto.getCpf());
+		}
+		if (pacienteUpdateDto.getEmail() != null) {
+			paciente.setEmail(pacienteUpdateDto.getEmail());
+		}
+		if (pacienteUpdateDto.getTelefone() != null) {
+			paciente.setTelefone(pacienteUpdateDto.getTelefone());
+		}
 	}
 	
 }

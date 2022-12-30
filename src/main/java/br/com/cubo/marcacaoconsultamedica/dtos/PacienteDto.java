@@ -32,5 +32,6 @@ public class PacienteDto {
 	
 	private boolean ativo;
 	
+	@NotNull(message = "O Tipo de Plano não pode ser vazio.")
 	private UUID tipoPlano;
 }
