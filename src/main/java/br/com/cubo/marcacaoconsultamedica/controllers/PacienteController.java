@@ -21,14 +21,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cubo.marcacaoconsultamedica.dtos.EnderecoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.MedicoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteUpdateDto;
+import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
 import br.com.cubo.marcacaoconsultamedica.entities.Medico;
 import br.com.cubo.marcacaoconsultamedica.entities.Paciente;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.exceptions.ResourceNotFoundException;
+import br.com.cubo.marcacaoconsultamedica.services.EnderecoService;
 import br.com.cubo.marcacaoconsultamedica.services.PacienteService;
 import br.com.cubo.marcacaoconsultamedica.services.TipoPlanoService;
 import br.com.cubo.marcacaoconsultamedica.utils.AppMessages;
@@ -40,10 +43,13 @@ public class PacienteController {
 
 	private final PacienteService pacienteService;
 	private final TipoPlanoService tipoPlanoService;
+	private final EnderecoService enderecoService;
 
-	public PacienteController(PacienteService pacienteService, TipoPlanoService tipoPlanoService) {
+	public PacienteController(PacienteService pacienteService, TipoPlanoService tipoPlanoService,
+			EnderecoService enderecoService) {
 		this.pacienteService = pacienteService;
 		this.tipoPlanoService = tipoPlanoService;
+		this.enderecoService = enderecoService;
 	}
 	
 	@GetMapping
@@ -103,9 +109,32 @@ public class PacienteController {
 		
 		Paciente updatedPaciente = pacienteService.save(paciente);
 		BeanUtils.copyProperties(updatedPaciente, pacienteUpdateDto);
-		
-		
+			
 		response.setData(pacienteUpdateDto);
+		
+		return ResponseEntity.ok(response);
+	}
+	
+	@PutMapping("/{id}/endereco")
+	public ResponseEntity<Response<EnderecoUpdateDto>> updateEnderecoPaciente(@PathVariable(name = "id") UUID id,
+			@RequestBody @Valid EnderecoUpdateDto enderecoUpdateDto, BindingResult result) {
+		
+		Response<EnderecoUpdateDto> response = new Response<>();	
+		Paciente paciente = null;
+		
+		if (!existeErroDeValidacao(response, result)) {
+			paciente = pacienteService.findOneById(id).orElseThrow(
+					() -> new ResourceNotFoundException(AppMessages.PACIENTE_NOT_FOUND));
+		} else {
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		updateEnderecoPacienteFields(enderecoUpdateDto, paciente.getEndereco());
+		
+		Endereco updatedEndereco = enderecoService.save(paciente.getEndereco());
+		BeanUtils.copyProperties(updatedEndereco, enderecoUpdateDto);
+		
+		response.setData(enderecoUpdateDto);
 		
 		return ResponseEntity.ok(response);
 	}
@@ -131,6 +160,28 @@ public class PacienteController {
 		if (pacienteUpdateDto.getTelefone() != null) {
 			paciente.setTelefone(pacienteUpdateDto.getTelefone());
 		}
+	}
+	
+	private void updateEnderecoPacienteFields(EnderecoUpdateDto enderecoUpdateDto, Endereco endereco) {
+		if (enderecoUpdateDto.getCep() != null) {
+			endereco.setCep(enderecoUpdateDto.getCep());
+		}
+		if (enderecoUpdateDto.getLogradouro() != null) {
+			endereco.setLogradouro(enderecoUpdateDto.getLogradouro());
+		}
+		if (enderecoUpdateDto.getNumero() != null) {
+			endereco.setNumero(enderecoUpdateDto.getNumero());
+		}
+		if (enderecoUpdateDto.getBairro() != null) {
+			endereco.setBairro(enderecoUpdateDto.getBairro());
+		}
+		if (enderecoUpdateDto.getCidade() != null) {
+			endereco.setCidade(enderecoUpdateDto.getCidade());
+		}
+		if (enderecoUpdateDto.getEstado() != null) {
+			endereco.setEstado(enderecoUpdateDto.getEstado());
+		}
+		
 	}
 	
 }

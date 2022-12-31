@@ -1,6 +1,7 @@
 package br.com.cubo.marcacaoconsultamedica.dtos;
 
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import lombok.Data;
 
@@ -18,5 +19,6 @@ public class EnderecoUpdateDto {
 	
 	private String cidade;
 	
+	@Size(max = 2, message = "Válido apenas dois caracteres para estado.")
 	private String estado;
 }
