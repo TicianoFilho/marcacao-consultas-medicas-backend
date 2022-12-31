@@ -16,5 +16,9 @@ public class AppMessages {
 
 	// Paciente
 	public static final String PACIENTE_NOT_FOUND = "Paciente não encontrado.";
+	
+	// Agendamento
+	public static final String AGENDAMENTO_NOT_FOUND = "Agendamento não encontrado.";
+	
 }
 
