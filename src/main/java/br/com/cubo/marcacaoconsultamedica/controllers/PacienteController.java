@@ -22,13 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cubo.marcacaoconsultamedica.dtos.EnderecoUpdateDto;
-import br.com.cubo.marcacaoconsultamedica.dtos.MedicoDto;
-import br.com.cubo.marcacaoconsultamedica.dtos.MedicoUpdateDto;
-import br.com.cubo.marcacaoconsultamedica.dtos.PacienteAtivoFlag;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
-import br.com.cubo.marcacaoconsultamedica.entities.Medico;
 import br.com.cubo.marcacaoconsultamedica.entities.Paciente;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.exceptions.ResourceNotFoundException;
@@ -152,6 +148,17 @@ public class PacienteController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@PutMapping("/{id}/deactivate")
+	public ResponseEntity<?> desativarPaciente(@PathVariable(name = "id") UUID id) {
+		
+		Paciente paciente = pacienteService.findOneById(id).orElseThrow(
+				() -> new ResourceNotFoundException(AppMessages.PACIENTE_NOT_FOUND));
+		
+		paciente.setAtivo(false);		
+		pacienteService.save(paciente);
+		
+		return ResponseEntity.ok().build();
+	}
 	
 	private boolean existeErroDeValidacao(Response<? extends Object> response, BindingResult result) {		
 		if (result.hasErrors()) {
