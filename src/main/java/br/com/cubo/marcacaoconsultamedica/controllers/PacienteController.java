@@ -25,7 +25,6 @@ import br.com.cubo.marcacaoconsultamedica.dtos.EnderecoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteTipoPlanoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteUpdateDto;
-import br.com.cubo.marcacaoconsultamedica.dtos.TipoPlanoDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
 import br.com.cubo.marcacaoconsultamedica.entities.Paciente;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
