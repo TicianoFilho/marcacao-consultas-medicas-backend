@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cubo.marcacaoconsultamedica.dtos.EnderecoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.PacienteTipoPlanoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteUpdateDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.TipoPlanoDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
 import br.com.cubo.marcacaoconsultamedica.entities.Paciente;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
@@ -75,7 +77,7 @@ public class PacienteController {
 		}
 		
 		TipoPlano tipoPlano = tipoPlanoService.findOneById(pacienteDto.getTipoPlano()).orElseThrow(
-				()-> new ResourceNotFoundException("Tipo de Plano não existe."));
+				()-> new ResourceNotFoundException(AppMessages.TIPO_PLANO_NOT_FOUND));
 		
 		Paciente paciente = new Paciente();				
 		BeanUtils.copyProperties(pacienteDto, paciente);
@@ -155,6 +157,29 @@ public class PacienteController {
 				() -> new ResourceNotFoundException(AppMessages.PACIENTE_NOT_FOUND));
 		
 		paciente.setAtivo(false);		
+		pacienteService.save(paciente);
+		
+		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("/{id}/tipo-plano")
+	public ResponseEntity<Object> alterarPacienteTipoPlano(@PathVariable(name = "id") UUID id,
+			@RequestBody @Valid PacienteTipoPlanoUpdateDto pacienteTipoPlanoUpdateDto, BindingResult result) {
+		
+		Response<PacienteTipoPlanoUpdateDto> response = new Response<>();	
+		Paciente paciente = null;
+		
+		if (!existeErroDeValidacao(response, result)) {
+			paciente = pacienteService.findOneById(id).orElseThrow(
+					() -> new ResourceNotFoundException(AppMessages.PACIENTE_NOT_FOUND));
+		} else {
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		TipoPlano tipoPlano = tipoPlanoService.findOneById(pacienteTipoPlanoUpdateDto.getTipoPlanoId()).orElseThrow(
+				()-> new ResourceNotFoundException(AppMessages.TIPO_PLANO_NOT_FOUND));
+		
+		paciente.setTipoPlano(tipoPlano);
 		pacienteService.save(paciente);
 		
 		return ResponseEntity.ok().build();
