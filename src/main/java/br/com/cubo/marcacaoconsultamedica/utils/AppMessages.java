@@ -19,6 +19,7 @@ public class AppMessages {
 	
 	// Agendamento
 	public static final String AGENDAMENTO_NOT_FOUND = "Agendamento não encontrado.";
+	public static final String AGENDAMENTO_NEGADO_PACIENTE_INATIVO = "Apenas usuários ativos podem agendar consultas.";
 	
 }
 

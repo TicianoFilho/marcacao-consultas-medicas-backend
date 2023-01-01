@@ -86,6 +86,11 @@ public class AgendamentoController {
 		Paciente paciente = pacienteService.findOneById(agendamentoDto.getPacienteId()).orElseThrow(
 				() -> new ResourceNotFoundException(AppMessages.PACIENTE_NOT_FOUND));
 		
+		if (!paciente.isAtivo()) {
+			response.getErrors().add(AppMessages.AGENDAMENTO_NEGADO_PACIENTE_INATIVO);
+			return ResponseEntity.badRequest().body(response);
+		}
+		
 		Medico medico = medicoService.findOneById(agendamentoDto.getMedicoId()).orElseThrow(
 				() -> new ResourceNotFoundException(AppMessages.MEDICO_NOT_FOUND));
 		
