@@ -21,16 +21,16 @@ public abstract class Pessoa implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Column(nullable = false)
-	private String nome;
+	protected String nome;
 	
 	@Column(nullable = false)
-	private String cpf;
+	protected String cpf;
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "endereco_id", referencedColumnName = "id", nullable = false)
-	private Endereco endereco;
+	protected Endereco endereco;
 	
-	private String telefone;
+	protected String telefone;
 	
-	private String email;
+	protected String email;
 }
