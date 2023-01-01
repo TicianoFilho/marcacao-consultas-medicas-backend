@@ -16,12 +16,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.ResourceAccessException;
 
 import br.com.cubo.marcacaoconsultamedica.dtos.AgendamentoDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.AgendamentoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteTipoPlanoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Agendamento;
 import br.com.cubo.marcacaoconsultamedica.entities.Especialidade;
@@ -75,8 +77,7 @@ public class AgendamentoController {
 	public ResponseEntity<Response<AgendamentoDto>> saveAgendamento(@RequestBody @Valid AgendamentoDto agendamentoDto,
 			BindingResult result) {
 		
-		Response<AgendamentoDto> response = new Response<>();
-		
+		Response<AgendamentoDto> response = new Response<>();		
 		if (VerificaDtoComErroValidacao.existeErroDeValidacao(response, result)) {
 			return ResponseEntity.badRequest().body(response);
 		}
@@ -115,5 +116,35 @@ public class AgendamentoController {
 		response.setData(agendamentoDto);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<Response<AgendamentoUpdateDto>> updateAgendamento(@PathVariable(name = "id") UUID id,
+			@RequestBody @Valid AgendamentoUpdateDto agendamentoUpdateDto, BindingResult result) {
+		
+		Response<AgendamentoUpdateDto> response = new Response<>();	
+		
+		if (VerificaDtoComErroValidacao.existeErroDeValidacao(response, result)) {
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		Agendamento agendamento = agendamentoService.findOneById(id).orElseThrow(
+				() -> new ResourceNotFoundException(AppMessages.AGENDAMENTO_NOT_FOUND));
+		
+		updateAgendamentoFields(agendamentoUpdateDto, agendamento);
+		
+		agendamentoService.save(agendamento);
+		response.setData(agendamentoUpdateDto);
+		
+		return ResponseEntity.ok(response);
+	}
+	
+	private void updateAgendamentoFields(AgendamentoUpdateDto agendamentoUpdateDto, Agendamento agendamento) {
+		if (agendamentoUpdateDto.getData() != null) {
+			agendamento.setData(agendamentoUpdateDto.getData());
+		}
+		if (agendamentoUpdateDto.getHora() != null) {
+			agendamento.setHora(agendamentoUpdateDto.getHora());
+		}
 	}
 }
