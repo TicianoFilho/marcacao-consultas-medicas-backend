@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -137,6 +138,17 @@ public class AgendamentoController {
 		response.setData(agendamentoUpdateDto);
 		
 		return ResponseEntity.ok(response);
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteAgendamento(@PathVariable(name = "id") UUID id) {
+		
+		Agendamento agendamento = agendamentoService.findOneById(id).orElseThrow(
+				() -> new ResourceNotFoundException(AppMessages.AGENDAMENTO_NOT_FOUND));
+		
+		agendamentoService.delete(agendamento);
+		
+		return ResponseEntity.ok(String.format("O agendamento de id=%s foi excluído com sucesso.", id));
 	}
 	
 	private void updateAgendamentoFields(AgendamentoUpdateDto agendamentoUpdateDto, Agendamento agendamento) {
