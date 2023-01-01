@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ import br.com.cubo.marcacaoconsultamedica.dtos.PacienteDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteTipoPlanoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.PacienteUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
+import br.com.cubo.marcacaoconsultamedica.entities.Medico;
 import br.com.cubo.marcacaoconsultamedica.entities.Paciente;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.exceptions.ResourceNotFoundException;
@@ -182,6 +184,17 @@ public class PacienteController {
 		pacienteService.save(paciente);
 		
 		return ResponseEntity.ok().build();
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deletePaciente(@PathVariable(name = "id") UUID id) {
+		
+		Paciente paciente = pacienteService.findOneById(id).orElseThrow(
+				() -> new ResourceNotFoundException(AppMessages.PACIENTE_NOT_FOUND));
+		
+		pacienteService.delete(paciente);
+		
+		return ResponseEntity.ok(String.format("O paciente de id=%s foi excluído com sucesso.", id));
 	}
 	
 	private boolean existeErroDeValidacao(Response<? extends Object> response, BindingResult result) {		
