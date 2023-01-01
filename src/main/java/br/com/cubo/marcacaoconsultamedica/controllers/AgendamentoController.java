@@ -72,10 +72,10 @@ public class AgendamentoController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Response<Agendamento>> saveAgendamento(@RequestBody @Valid AgendamentoDto agendamentoDto,
+	public ResponseEntity<Response<AgendamentoDto>> saveAgendamento(@RequestBody @Valid AgendamentoDto agendamentoDto,
 			BindingResult result) {
 		
-		Response<Agendamento> response = new Response<>();
+		Response<AgendamentoDto> response = new Response<>();
 		
 		if (VerificaDtoComErroValidacao.existeErroDeValidacao(response, result)) {
 			return ResponseEntity.badRequest().body(response);
@@ -103,7 +103,16 @@ public class AgendamentoController {
 		agendamento.setEspecialidade(especialidade);
 
 		Agendamento newAgendamento = agendamentoService.save(agendamento);	
-		response.setData(newAgendamento);
+		
+		agendamentoDto.setData(newAgendamento.getData());
+		agendamentoDto.setHora(newAgendamento.getHora());
+		agendamentoDto.setPacienteId(newAgendamento.getPaciente().getId());
+		agendamentoDto.setMedicoId(newAgendamento.getMedico().getId());
+		agendamentoDto.setUnidadeId(newAgendamento.getUnidade().getId());
+		agendamentoDto.setEspecialidadeId(newAgendamento.getEspecialidade().getId());
+		agendamentoDto.setId(newAgendamento.getId());
+		
+		response.setData(agendamentoDto);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
