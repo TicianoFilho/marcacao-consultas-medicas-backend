@@ -32,29 +32,29 @@ public class Agendamento implements Serializable {
 	private UUID id;
 	
 	@Column(name = "hora_agendada", nullable = false)
-	private LocalTime horaAgendada;
+	private LocalTime hora;
 	
 	@Column(name = "data_agendada", nullable = false)
-	private LocalDate dataAgendada;
+	private LocalDate data;
 	
 	@Column(name = "situacao")
 	@Enumerated(EnumType.STRING)
 	private SituacaoAgendamento situacao;
 	
 	@ManyToOne
-	@JoinColumn(name = "paciente_id", referencedColumnName = "id")
-	private Paciente paciente;
-	
-	@ManyToOne
 	@JoinColumn(name = "medico_id", referencedColumnName = "id")
 	private Medico medico;
+	
+	@ManyToOne
+	@JoinColumn(name = "especialidade_id", referencedColumnName = "id")
+	private Especialidade especialidade;
 	
 	@ManyToOne
 	@JoinColumn(name = "unidade_id", referencedColumnName = "id")
 	private Unidade unidade;
 	
 	@ManyToOne
-	@JoinColumn(name = "especialidade_id", referencedColumnName = "id")
-	private Especialidade especialidade;
+	@JoinColumn(name = "paciente_id", referencedColumnName = "id")
+	private Paciente paciente;
 	
 }
