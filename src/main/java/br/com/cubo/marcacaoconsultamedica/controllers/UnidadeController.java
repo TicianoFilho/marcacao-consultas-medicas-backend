@@ -35,6 +35,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/api/unidades")
@@ -53,7 +54,23 @@ public class UnidadeController {
 			tags = {"Unidade"},
 			operationId = "getAllUnidades",
 			summary = "Busca todas as Unidades existentes",
-			description = "Busca todas as Unidades existentes no banco de dados. Traz os dados com paginação.")
+			description = "Busca todas as Unidades existentes no banco de dados. Traz os dados com paginação.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = UnidadeDto.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "A busca das Unidades foi realizada com sucesso."),
+					@ApiResponse(responseCode = "401",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+			})
 	public ResponseEntity<Page<Unidade>> getAllUnidades(
 			@PageableDefault(page = 0, size = 5, sort = "id", direction = Direction.ASC) Pageable pageable) {
 		
@@ -64,9 +81,28 @@ public class UnidadeController {
 		return ResponseEntity.ok().body(unidadeService.findAll(pageable));		
 	}
 	
-	@GetMapping("/{id}") 
+	@GetMapping("/{id}")
 	@Operation(
-			tags = {"Unidade"})
+			tags = {"Unidade"},
+			operationId = "getUnidadeById",
+			summary = "Busca uma Unidade pelo ID.",
+			description = "Busca a Unidade no banco de dados pelo id informado no parâmetro da requisição",
+			security = @SecurityRequirement(name = "BearerJWT"),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = UnidadeDto.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Unidade encontrada com sucesso."),
+					@ApiResponse(responseCode = "401",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Unidade não encontrada."),
+			})
 	public ResponseEntity<Object> getUnidadeById(@PathVariable(name = "id") UUID id) {
 		
 		Optional<Unidade> unidadeOptional = unidadeService.findOneById(id);
@@ -84,15 +120,22 @@ public class UnidadeController {
 			description = "Cria um novo registro de Unidade no banco de dados.",
 			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Objeto que será enviado no corpo da requisição."),
 			responses = {
-					@ApiResponse(responseCode = "200",
-						content = @Content(schema = @Schema(implementation = UnidadeDto.class),
-						mediaType = MediaType.APPLICATION_JSON_VALUE), 
-						description = "O Registro foi salvo com sucesso."),
+					@ApiResponse(responseCode = "201",
+						content = @Content(
+								schema = @Schema(implementation = UnidadeDto.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "O Registro foi salvo com sucesso."),
 					@ApiResponse(responseCode = "400",
-						content = @Content(schema = @Schema(implementation = Response.class),
-						mediaType = MediaType.APPLICATION_JSON_VALUE),
-						description = "Algum campo requerido pode não ter sido passado no corpo da requisição.")
-			})
+						content = @Content(
+								schema = @Schema(implementation = Response.class), 
+								mediaType = MediaType.APPLICATION_JSON_VALUE),
+								description = "Algum campo requerido pode não ter sido passado no corpo da requisição."),
+					@ApiResponse(responseCode = "401",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+			},
+			security = @SecurityRequirement(name = "BearerJWT"))
 	public ResponseEntity<Response<UnidadeDto>> saveUnidade(@Valid @RequestBody UnidadeDto unidadeDto,
 			BindingResult result) {
 		
@@ -114,20 +157,45 @@ public class UnidadeController {
 	
 	@PutMapping("/{id}")
 	@Operation(
-			tags = {"Unidade"})
+			tags = {"Unidade"},
+			operationId = "updateUndiade",
+			summary = "Atualiza a Unidade",
+			description = "Atualiza a Unidade no banco de dados.",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Objeto que será enviado no corpo da requisição."),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = UnidadeDto.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "O Registro foi alterado com sucesso."),
+					@ApiResponse(responseCode = "400",
+						content = @Content(
+								schema = @Schema(implementation = Response.class), 
+								mediaType = MediaType.APPLICATION_JSON_VALUE),
+								description = "Algum campo requerido pode não ter sido passado no corpo da requisição."),
+					@ApiResponse(responseCode = "401",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "A Unidade com o ID informado não foi encontrada."),
+			},
+			security = @SecurityRequirement(name = "BearerJWT"))
 	public ResponseEntity<Response<UnidadeDto>> updateUnidade(@PathVariable(name = "id") UUID id,
 			@RequestBody @Valid UnidadeDto unidadeDto, BindingResult result) {
 		
 		Response<UnidadeDto> response = new Response<>();
 		if (existeErroDeValidacao(response, result)) {
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 		
 		Optional<Unidade> unidadeOptional = unidadeService.findOneById(id);
 		if (unidadeOptional.isPresent()) {
 			updateUnidadeFields(unidadeDto, unidadeOptional.get());
 		} else {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		
 		Unidade updatedUnidade = unidadeService.save(unidadeOptional.get());
@@ -139,8 +207,33 @@ public class UnidadeController {
 	
 	@PutMapping("/{id}/endereco")
 	@Operation(
-			tags = {"Unidade"})
-	public ResponseEntity<Response<EnderecoUpdateDto>> updateEnderecoMedico(@PathVariable(name = "id") UUID id,
+			tags = {"Unidade"},
+			operationId = "updateEnderecoUnidade",
+			summary = "Atualiza o endereço da Unidade",
+			description = "Atualiza o endereço da Unidade no banco de dados.",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Objeto que será enviado no corpo da requisição."),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = EnderecoUpdateDto.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "O Registro foi alterado com sucesso."),
+					@ApiResponse(responseCode = "400",
+						content = @Content(
+								schema = @Schema(implementation = Response.class), 
+								mediaType = MediaType.APPLICATION_JSON_VALUE),
+								description = "Algum campo requerido pode não ter sido passado no corpo da requisição."),
+					@ApiResponse(responseCode = "401",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "A Unidade com o ID informado não foi encontrada."),
+			},
+			security = @SecurityRequirement(name = "BearerJWT"))
+	public ResponseEntity<Response<EnderecoUpdateDto>> updateEnderecoUnidade(@PathVariable(name = "id") UUID id,
 			@RequestBody @Valid EnderecoUpdateDto enderecoUpdateDto, BindingResult result) {
 		
 		Optional<Unidade> unidadeOptional = unidadeService.findOneById(id);
@@ -161,7 +254,22 @@ public class UnidadeController {
 	
 	@DeleteMapping("/{id}")
 	@Operation(
-			tags = {"Unidade"})
+			tags = {"Unidade"},
+			operationId = "deleteUnidade",
+			summary = "Deleta a Unidade pelo ID.",
+			description = "Deleta a Unidade pelo ID no banco de dados.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = String.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "A busca das Unidades foi realizada com sucesso."),
+					@ApiResponse(responseCode = "401",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+			})
 	public ResponseEntity<String> deleteUnidade(@PathVariable(name = "id") UUID id) {
 		
 		Optional<Unidade> unidadeOptional = unidadeService.findOneById(id);
