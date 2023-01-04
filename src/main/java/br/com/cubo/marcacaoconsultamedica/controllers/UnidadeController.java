@@ -69,7 +69,7 @@ public class UnidadeController {
 					@ApiResponse(responseCode = "404",
 						content = @Content(
 								mediaType = MediaType.APPLICATION_JSON_VALUE), 
-								description = "Acesso não autorizado."),
+								description = "Nenhuma Unidade encontrada."),
 			})
 	public ResponseEntity<Page<Unidade>> getAllUnidades(
 			@PageableDefault(page = 0, size = 5, sort = "id", direction = Direction.ASC) Pageable pageable) {
@@ -78,7 +78,7 @@ public class UnidadeController {
 		if (UnidadesPage.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
-		return ResponseEntity.ok().body(unidadeService.findAll(pageable));		
+		return ResponseEntity.ok().body(UnidadesPage);		
 	}
 	
 	@GetMapping("/{id}")

@@ -18,7 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 				description = "A aplicação realiza agendamentos/marcações de consultas médicas"),
 		servers = @Server(url = "http://localhost:8080"),
 		tags = {@Tag(name = "Unidade", description = "Local onde será realizado o atendimento médico agendado.")})
-@SecurityScheme(name = "BearerJWT", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT", description = "Gera o token para o projeto.")
+@SecurityScheme(name = "BearerJWT", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT", description = "Informe o token para acessar os endpoints.")
 public class MarcacaoConsultaMedicaApplication {
 
 	public static void main(String[] args) {
