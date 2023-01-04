@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cubo.marcacaoconsultamedica.dtos.EnderecoUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.UnidadeDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.UnidadeUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Endereco;
 import br.com.cubo.marcacaoconsultamedica.entities.Unidade;
 import br.com.cubo.marcacaoconsultamedica.services.EnderecoService;
@@ -165,7 +166,7 @@ public class UnidadeController {
 			responses = {
 					@ApiResponse(responseCode = "200",
 						content = @Content(
-								schema = @Schema(implementation = UnidadeDto.class),
+								schema = @Schema(implementation = UnidadeUpdateDto.class),
 								mediaType = MediaType.APPLICATION_JSON_VALUE), 
 								description = "Registro alterado com sucesso."),
 					@ApiResponse(responseCode = "400",
@@ -183,24 +184,24 @@ public class UnidadeController {
 							description = "O registro com o ID informado não foi encontrado."),
 			},
 			security = @SecurityRequirement(name = "BearerJWT"))
-	public ResponseEntity<Response<UnidadeDto>> updateUnidade(@PathVariable(name = "id") UUID id,
-			@RequestBody @Valid UnidadeDto unidadeDto, BindingResult result) {
+	public ResponseEntity<Response<UnidadeUpdateDto>> updateUnidade(@PathVariable(name = "id") UUID id,
+			@RequestBody @Valid UnidadeUpdateDto unidadeUpdateDto, BindingResult result) {
 		
-		Response<UnidadeDto> response = new Response<>();
+		Response<UnidadeUpdateDto> response = new Response<>();
 		if (existeErroDeValidacao(response, result)) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 		
 		Optional<Unidade> unidadeOptional = unidadeService.findOneById(id);
 		if (unidadeOptional.isPresent()) {
-			updateUnidadeFields(unidadeDto, unidadeOptional.get());
+			updateUnidadeFields(unidadeUpdateDto, unidadeOptional.get());
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		
 		Unidade updatedUnidade = unidadeService.save(unidadeOptional.get());
-		BeanUtils.copyProperties(updatedUnidade, unidadeDto);
-		response.setData(unidadeDto);
+		BeanUtils.copyProperties(updatedUnidade, unidadeUpdateDto);
+		response.setData(unidadeUpdateDto);
 		
 		return ResponseEntity.ok(response);
 	}
@@ -290,15 +291,15 @@ public class UnidadeController {
 		return false;
 	}
 	
-	private void updateUnidadeFields(UnidadeDto unidadeDto, Unidade unidade) {
-		if (unidadeDto.getNome() != null) {
-			unidade.setNome(unidadeDto.getNome());
+	private void updateUnidadeFields(UnidadeUpdateDto unidadeUpdateDto, Unidade unidade) {
+		if (unidadeUpdateDto.getNome() != null) {
+			unidade.setNome(unidadeUpdateDto.getNome());
 		}
-		if (unidadeDto.getTelefone() != null) {
-			unidade.setTelefone(unidadeDto.getTelefone());
+		if (unidadeUpdateDto.getTelefone() != null) {
+			unidade.setTelefone(unidadeUpdateDto.getTelefone());
 		}
-		if (unidadeDto.getEmail() != null) {
-			unidade.setEmail(unidadeDto.getEmail());
+		if (unidadeUpdateDto.getEmail() != null) {
+			unidade.setEmail(unidadeUpdateDto.getEmail());
 		}
 	}
 	
