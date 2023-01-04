@@ -49,24 +49,24 @@ public class TipoPlanoController {
 	@Operation(
 			tags = {"Tipo de Plano"},
 			operationId = "getAllTipoPlano",
-			summary = "Busca todas os tipos de planos existentes",
+			summary = "Busca todos os tipos de planos existentes",
 			description = "Busca todos os tipos de planos existentes no banco de dados. Traz os dados com paginação.",
 			security = @SecurityRequirement(name = "BearerJWT"),
-			responses = {
-					@ApiResponse(responseCode = "200",
-						content = @Content(
-								schema = @Schema(implementation = UnidadeDto.class),
-								mediaType = MediaType.APPLICATION_JSON_VALUE), 
-								description = "A busca das Unidades foi realizada com sucesso."),
-					@ApiResponse(responseCode = "401",
-					content = @Content(
-							mediaType = MediaType.APPLICATION_JSON_VALUE), 
-							description = "Acesso não autorizado."),
-					@ApiResponse(responseCode = "404",
-						content = @Content(
-								mediaType = MediaType.APPLICATION_JSON_VALUE), 
-								description = "Acesso não autorizado."),
-			})
+					responses = {
+							@ApiResponse(responseCode = "200",
+								content = @Content(
+										schema = @Schema(implementation = UnidadeDto.class),
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "A busca foi realizada com sucesso."),
+							@ApiResponse(responseCode = "401",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Acesso não autorizado."),
+							@ApiResponse(responseCode = "404",
+								content = @Content(
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "Nenhum registro encontrado."),
+					})
 	public ResponseEntity<Page<TipoPlano>> getAllTipoPlano(
 			@PageableDefault(page = 0, size = 5, sort = "id", direction = Direction.ASC) Pageable pageable) {
 		Page<TipoPlano> tipoPlanoPage = tipoPlanoService.findAll(pageable);

@@ -61,7 +61,7 @@ public class UnidadeController {
 						content = @Content(
 								schema = @Schema(implementation = UnidadeDto.class),
 								mediaType = MediaType.APPLICATION_JSON_VALUE), 
-								description = "A busca das Unidades foi realizada com sucesso."),
+								description = "A busca foi realizada com sucesso."),
 					@ApiResponse(responseCode = "401",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON_VALUE), 
@@ -69,7 +69,7 @@ public class UnidadeController {
 					@ApiResponse(responseCode = "404",
 						content = @Content(
 								mediaType = MediaType.APPLICATION_JSON_VALUE), 
-								description = "Nenhuma Unidade encontrada."),
+								description = "Nenhum registro encontrad."),
 			})
 	public ResponseEntity<Page<Unidade>> getAllUnidades(
 			@PageableDefault(page = 0, size = 5, sort = "id", direction = Direction.ASC) Pageable pageable) {
@@ -88,21 +88,21 @@ public class UnidadeController {
 			summary = "Busca uma Unidade pelo ID.",
 			description = "Busca a Unidade no banco de dados pelo id informado no parâmetro da requisição",
 			security = @SecurityRequirement(name = "BearerJWT"),
-			responses = {
-					@ApiResponse(responseCode = "200",
-						content = @Content(
-								schema = @Schema(implementation = UnidadeDto.class),
-								mediaType = MediaType.APPLICATION_JSON_VALUE), 
-								description = "Unidade encontrada com sucesso."),
-					@ApiResponse(responseCode = "401",
-					content = @Content(
-							mediaType = MediaType.APPLICATION_JSON_VALUE), 
-							description = "Acesso não autorizado."),
-					@ApiResponse(responseCode = "404",
-						content = @Content(
-								mediaType = MediaType.APPLICATION_JSON_VALUE), 
-								description = "Unidade não encontrada."),
-			})
+					responses = {
+							@ApiResponse(responseCode = "200",
+								content = @Content(
+										schema = @Schema(implementation = UnidadeDto.class),
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "A busca foi realizada com sucesso."),
+							@ApiResponse(responseCode = "401",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Acesso não autorizado."),
+							@ApiResponse(responseCode = "404",
+								content = @Content(
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "Nenhum registro encontrad."),
+					})
 	public ResponseEntity<Object> getUnidadeById(@PathVariable(name = "id") UUID id) {
 		
 		Optional<Unidade> unidadeOptional = unidadeService.findOneById(id);
@@ -129,7 +129,7 @@ public class UnidadeController {
 						content = @Content(
 								schema = @Schema(implementation = Response.class), 
 								mediaType = MediaType.APPLICATION_JSON_VALUE),
-								description = "Algum campo requerido pode não ter sido passado no corpo da requisição."),
+								description = "Algum campo requerido pode não ter sido passado no corpo da requisição, ou mal formatado"),
 					@ApiResponse(responseCode = "401",
 						content = @Content(
 								mediaType = MediaType.APPLICATION_JSON_VALUE), 
@@ -167,12 +167,12 @@ public class UnidadeController {
 						content = @Content(
 								schema = @Schema(implementation = UnidadeDto.class),
 								mediaType = MediaType.APPLICATION_JSON_VALUE), 
-								description = "O Registro foi alterado com sucesso."),
+								description = "Registro alterado com sucesso."),
 					@ApiResponse(responseCode = "400",
 						content = @Content(
 								schema = @Schema(implementation = Response.class), 
 								mediaType = MediaType.APPLICATION_JSON_VALUE),
-								description = "Algum campo requerido pode não ter sido passado no corpo da requisição."),
+								description = "Algum campo requerido pode não ter sido passado no corpo da requisição, ou mal formatado."),
 					@ApiResponse(responseCode = "401",
 						content = @Content(
 								mediaType = MediaType.APPLICATION_JSON_VALUE), 
@@ -180,7 +180,7 @@ public class UnidadeController {
 					@ApiResponse(responseCode = "404",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON_VALUE), 
-							description = "A Unidade com o ID informado não foi encontrada."),
+							description = "O registro com o ID informado não foi encontrado."),
 			},
 			security = @SecurityRequirement(name = "BearerJWT"))
 	public ResponseEntity<Response<UnidadeDto>> updateUnidade(@PathVariable(name = "id") UUID id,
@@ -219,18 +219,18 @@ public class UnidadeController {
 								mediaType = MediaType.APPLICATION_JSON_VALUE), 
 								description = "O Registro foi alterado com sucesso."),
 					@ApiResponse(responseCode = "400",
-						content = @Content(
-								schema = @Schema(implementation = Response.class), 
-								mediaType = MediaType.APPLICATION_JSON_VALUE),
-								description = "Algum campo requerido pode não ter sido passado no corpo da requisição."),
+					content = @Content(
+							schema = @Schema(implementation = Response.class), 
+							mediaType = MediaType.APPLICATION_JSON_VALUE),
+							description = "Algum campo requerido pode não ter sido passado no corpo da requisição, ou mal formatado."),
 					@ApiResponse(responseCode = "401",
-						content = @Content(
-								mediaType = MediaType.APPLICATION_JSON_VALUE), 
-								description = "Acesso não autorizado."),
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "Acesso não autorizado."),
 					@ApiResponse(responseCode = "404",
 					content = @Content(
 							mediaType = MediaType.APPLICATION_JSON_VALUE), 
-							description = "A Unidade com o ID informado não foi encontrada."),
+							description = "O registro com o ID informado não foi encontrado."),
 			},
 			security = @SecurityRequirement(name = "BearerJWT"))
 	public ResponseEntity<Response<EnderecoUpdateDto>> updateEnderecoUnidade(@PathVariable(name = "id") UUID id,
