@@ -270,6 +270,10 @@ public class UnidadeController {
 						content = @Content(
 								mediaType = MediaType.APPLICATION_JSON_VALUE), 
 								description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "O registro com o ID informado não foi encontrado."),
 			})
 	public ResponseEntity<String> deleteUnidade(@PathVariable(name = "id") UUID id) {
 		
