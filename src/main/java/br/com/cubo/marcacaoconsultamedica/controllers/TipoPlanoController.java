@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cubo.marcacaoconsultamedica.dtos.TipoPlanoDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.UnidadeDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.UnidadeUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.services.TipoPlanoService;
 import br.com.cubo.marcacaoconsultamedica.utils.AppMessages;
@@ -55,7 +56,6 @@ public class TipoPlanoController {
 					responses = {
 							@ApiResponse(responseCode = "200",
 								content = @Content(
-										schema = @Schema(implementation = UnidadeDto.class),
 										mediaType = MediaType.APPLICATION_JSON_VALUE), 
 										description = "A busca foi realizada com sucesso."),
 							@ApiResponse(responseCode = "401",
@@ -78,7 +78,25 @@ public class TipoPlanoController {
 	
 	@GetMapping("/{id}") 
 	@Operation(
-			tags = {"Tipo de Plano"})
+			tags = {"Tipo de Plano"},
+			operationId = "getTipoPlanoById",
+			summary = "Busca o tipo de plano pelo ID",
+			description = "Busca o tipo de planos existente no banco de dados pelo ID.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+					responses = {
+							@ApiResponse(responseCode = "200",
+								content = @Content(
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "A busca foi realizada com sucesso."),
+							@ApiResponse(responseCode = "401",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Acesso não autorizado."),
+							@ApiResponse(responseCode = "404",
+								content = @Content(
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "Nenhum registro encontrado."),
+					})
 	public ResponseEntity<Object> getTipoPlanoById(@PathVariable(name = "id") UUID id) {
 		
 		Optional<TipoPlano> tipoPlanoOptional = tipoPlanoService.findOneById(id);
@@ -90,30 +108,76 @@ public class TipoPlanoController {
 	
 	@PostMapping
 	@Operation(
-			tags = {"Tipo de Plano"})
-	public ResponseEntity<Response<TipoPlano>> saveTipoPlano(@Valid @RequestBody TipoPlanoDto tipoPlanoDto,
+			tags = {"Tipo de Plano"},
+			operationId = "saveTipoPlano",
+			summary = "Cria um novo tipo de plano.",
+			description = "Cria um novo tipo de plano no banco de dados.",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Objeto que será enviado no corpo da requisição."),
+			security = @SecurityRequirement(name = "BearerJWT"),
+					responses = {
+							@ApiResponse(responseCode = "201",
+								content = @Content(
+										schema = @Schema(implementation = TipoPlanoDto.class),
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "O registro foi criado com sucesso."),
+							@ApiResponse(responseCode = "400",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Algum campo requerido pode não ter sido passado no corpo da requisição, ou mal formatado."),
+							@ApiResponse(responseCode = "401",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Acesso não autorizado."),
+					})
+	public ResponseEntity<Response<TipoPlanoDto>> saveTipoPlano(@Valid @RequestBody TipoPlanoDto tipoPlanoDto,
 			BindingResult result) {
 		
-		Response<TipoPlano> response = new Response<>();
+		Response<TipoPlanoDto> response = new Response<>();
 		if (existeErroDeValidacao(response, result)) {
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 		
 		TipoPlano tipoPlano = new TipoPlano();
 		BeanUtils.copyProperties(tipoPlanoDto, tipoPlano);
 		TipoPlano newTipoPlano = tipoPlanoService.save(tipoPlano);
-		response.setData(newTipoPlano);
+		BeanUtils.copyProperties(newTipoPlano, tipoPlanoDto);
+		response.setData(tipoPlanoDto);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
 	@PutMapping("/{id}")
 	@Operation(
-			tags = {"Tipo de Plano"})
-	public ResponseEntity<Response<TipoPlano>> updateTipoPlano(@PathVariable(name = "id") UUID id,
+			tags = {"Tipo de Plano"},
+			operationId = "updateTipoPlano",
+			summary = "Atualiza o tipo de plano.",
+			description = "Atualiza o tipo de plano no banco de dados.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Objeto que será enviado no corpo da requisição."),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = UnidadeUpdateDto.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Registro alterado com sucesso."),
+					@ApiResponse(responseCode = "400",
+						content = @Content(
+								schema = @Schema(implementation = Response.class), 
+								mediaType = MediaType.APPLICATION_JSON_VALUE),
+								description = "Algum campo requerido pode não ter sido passado no corpo da requisição, ou mal formatado."),
+					@ApiResponse(responseCode = "401",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "O registro com o ID informado não foi encontrado."),
+			})
+	public ResponseEntity<Response<TipoPlanoDto>> updateTipoPlano(@PathVariable(name = "id") UUID id,
 			@RequestBody @Valid TipoPlanoDto tipoPlanoDto, BindingResult result) {
 		
-		Response<TipoPlano> response = new Response<>();
+		Response<TipoPlanoDto> response = new Response<>();
 		if (existeErroDeValidacao(response, result)) {
 			return ResponseEntity.badRequest().body(response);
 		}
@@ -128,14 +192,34 @@ public class TipoPlanoController {
 		tipoPlano.setId(tipoPlanoOptional.get().getId());
 		
 		TipoPlano updatedTipoPlano = tipoPlanoService.save(tipoPlano);
-		response.setData(updatedTipoPlano);
+		BeanUtils.copyProperties(updatedTipoPlano, tipoPlanoDto);
+		response.setData(tipoPlanoDto);
 		
 		return ResponseEntity.ok(response);
 	}
 	
 	@DeleteMapping("/{id}")
 	@Operation(
-			tags = {"Tipo de Plano"})
+			tags = {"Tipo de Plano"},
+			operationId = "deleteTipoPlano",
+			summary = "Exclui o tipo de plano.",
+			description = "Exclui o tipo de plano no banco de dados.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = String.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "A busca das Unidades foi realizada com sucesso."),
+					@ApiResponse(responseCode = "401",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "O registro com o ID informado não foi encontrado."),
+			})
 	public ResponseEntity<String> deleteTipoPlano(@PathVariable(name = "id") UUID id) {
 		
 		Optional<TipoPlano> tipoPlanoOptional = tipoPlanoService.findOneById(id);
@@ -148,7 +232,7 @@ public class TipoPlanoController {
 		return ResponseEntity.ok(String.format("Tipo de Plano de id=%s excluído com sucesso.", id));
 	}
 	
-	private boolean existeErroDeValidacao(Response<TipoPlano> response, BindingResult result) {		
+	private boolean existeErroDeValidacao(Response<TipoPlanoDto> response, BindingResult result) {		
 		if (result.hasErrors()) {
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return true;
