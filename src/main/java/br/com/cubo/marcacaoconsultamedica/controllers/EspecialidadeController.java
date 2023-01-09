@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cubo.marcacaoconsultamedica.dtos.EspecialidadeDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.TipoPlanoDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.UnidadeUpdateDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Especialidade;
 import br.com.cubo.marcacaoconsultamedica.entities.TipoPlano;
 import br.com.cubo.marcacaoconsultamedica.services.EspecialidadeService;
@@ -31,6 +33,7 @@ import br.com.cubo.marcacaoconsultamedica.utils.AppMessages;
 import br.com.cubo.marcacaoconsultamedica.utils.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -75,6 +78,26 @@ public class EspecialidadeController {
 	}
 	
 	@GetMapping("/{id}") 
+	@Operation(
+			tags = {"Especialidade"},
+			operationId = "getEspecialidadeById",
+			summary = "Busca a especialidade pelo ID",
+			description = "Busca a especialidade existente no banco de dados pelo ID.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+					responses = {
+							@ApiResponse(responseCode = "200",
+								content = @Content(
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "A busca foi realizada com sucesso."),
+							@ApiResponse(responseCode = "401",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Acesso não autorizado."),
+							@ApiResponse(responseCode = "404",
+								content = @Content(
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "Nenhum registro encontrado."),
+					})
 	public ResponseEntity<Object> getEspecialidadeById(@PathVariable(name = "id") UUID id) {
 		
 		Optional<Especialidade> especialidadeOptional = especialidadeService.findOneById(id);
@@ -85,10 +108,32 @@ public class EspecialidadeController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Response<Especialidade>> saveEspecialidade(@Valid @RequestBody EspecialidadeDto especialidadeDto,
+	@Operation(
+			tags = {"Especialidade"},
+			operationId = "saveEspecialidade",
+			summary = "Cria uma especialidade.",
+			description = "Cria uma especialidade no banco de dados.",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Objeto que será enviado no corpo da requisição."),
+			security = @SecurityRequirement(name = "BearerJWT"),
+					responses = {
+							@ApiResponse(responseCode = "201",
+								content = @Content(
+										schema = @Schema(implementation = EspecialidadeDto.class),
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "O registro foi criado com sucesso."),
+							@ApiResponse(responseCode = "400",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Algum campo requerido pode não ter sido passado no corpo da requisição, ou mal formatado."),
+							@ApiResponse(responseCode = "401",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Acesso não autorizado."),
+					})
+	public ResponseEntity<Response<EspecialidadeDto>> saveEspecialidade(@Valid @RequestBody EspecialidadeDto especialidadeDto,
 			BindingResult result) {
 		
-		Response<Especialidade> response = new Response<>();
+		Response<EspecialidadeDto> response = new Response<>();
 		if (existeErroDeValidacao(response, result)) {
 			return ResponseEntity.badRequest().body(response);
 		}
@@ -96,16 +141,44 @@ public class EspecialidadeController {
 		Especialidade especialidade = new Especialidade();
 		BeanUtils.copyProperties(especialidadeDto, especialidade);
 		Especialidade newEspecialidade = especialidadeService.save(especialidade);
-		response.setData(newEspecialidade);
+		BeanUtils.copyProperties(newEspecialidade, especialidadeDto);
+		response.setData(especialidadeDto);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Response<Especialidade>> updateEspecialidade(@PathVariable(name = "id") UUID id,
+	@Operation(
+			tags = {"Especialidade"},
+			operationId = "updadeEspecialidade",
+			summary = "Atualiza a especialidade.",
+			description = "Atualiza a especialidade banco de dados.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Objeto que será enviado no corpo da requisição."),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = EspecialidadeDto.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Registro alterado com sucesso."),
+					@ApiResponse(responseCode = "400",
+						content = @Content(
+								schema = @Schema(implementation = Response.class), 
+								mediaType = MediaType.APPLICATION_JSON_VALUE),
+								description = "Algum campo requerido pode não ter sido passado no corpo da requisição, ou mal formatado."),
+					@ApiResponse(responseCode = "401",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "O registro com o ID informado não foi encontrado."),
+			})
+	public ResponseEntity<Response<EspecialidadeDto>> updateEspecialidade(@PathVariable(name = "id") UUID id,
 			@RequestBody @Valid EspecialidadeDto especialidadeDto, BindingResult result) {
 		
-		Response<Especialidade> response = new Response<>();
+		Response<EspecialidadeDto> response = new Response<>();
 		if (existeErroDeValidacao(response, result)) {
 			return ResponseEntity.badRequest().body(response);
 		}
@@ -120,12 +193,34 @@ public class EspecialidadeController {
 		especialidade.setId(especialidadeOptional.get().getId());
 		
 		Especialidade updatedEspecialidade = especialidadeService.save(especialidade);
-		response.setData(updatedEspecialidade);
+		BeanUtils.copyProperties(updatedEspecialidade, especialidadeDto);
+		response.setData(especialidadeDto);
 		
 		return ResponseEntity.ok(response);
 	}
 	
 	@DeleteMapping("/{id}")
+	@Operation(
+			tags = {"Especialidade"},
+			operationId = "deleteEspecialidade",
+			summary = "Exclui a especialidade.",
+			description = "Exclui a especialidade no banco de dados.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = String.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "A busca das Unidades foi realizada com sucesso."),
+					@ApiResponse(responseCode = "401",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "O registro com o ID informado não foi encontrado."),
+			})
 	public ResponseEntity<String> deleteEspecialidade(@PathVariable(name = "id") UUID id) {
 		
 		Optional<Especialidade> especialidadeOptional = especialidadeService.findOneById(id);
@@ -138,7 +233,7 @@ public class EspecialidadeController {
 		return ResponseEntity.ok(String.format("Especialidade de id=%s excluído com sucesso.", id));
 	}
 	
-	private boolean existeErroDeValidacao(Response<Especialidade> response, BindingResult result) {		
+	private boolean existeErroDeValidacao(Response<EspecialidadeDto> response, BindingResult result) {		
 		if (result.hasErrors()) {
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return true;
