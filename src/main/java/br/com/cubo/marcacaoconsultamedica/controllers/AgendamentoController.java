@@ -1,16 +1,15 @@
 package br.com.cubo.marcacaoconsultamedica.controllers;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,7 +24,7 @@ import org.springframework.web.client.ResourceAccessException;
 
 import br.com.cubo.marcacaoconsultamedica.dtos.AgendamentoDto;
 import br.com.cubo.marcacaoconsultamedica.dtos.AgendamentoUpdateDto;
-import br.com.cubo.marcacaoconsultamedica.dtos.PacienteTipoPlanoUpdateDto;
+import br.com.cubo.marcacaoconsultamedica.dtos.EspecialidadeDto;
 import br.com.cubo.marcacaoconsultamedica.entities.Agendamento;
 import br.com.cubo.marcacaoconsultamedica.entities.Especialidade;
 import br.com.cubo.marcacaoconsultamedica.entities.Medico;
@@ -41,6 +40,11 @@ import br.com.cubo.marcacaoconsultamedica.services.UnidadeService;
 import br.com.cubo.marcacaoconsultamedica.utils.AppMessages;
 import br.com.cubo.marcacaoconsultamedica.utils.Response;
 import br.com.cubo.marcacaoconsultamedica.utils.VerificaDtoComErroValidacao;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/api/agendamentos")
@@ -62,12 +66,56 @@ public class AgendamentoController {
 	}
 	
 	@GetMapping
+	@Operation(
+			tags = {"Agendamento"},
+			operationId = "getAllAgendamentos",
+			summary = "Busca todas os agendamentos.",
+			description = "Busca todos os agendamentos existentes no banco de dados. Traz os dados com paginação.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+					responses = {
+							@ApiResponse(responseCode = "200",
+								content = @Content(
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "A busca foi realizada com sucesso."),
+							@ApiResponse(responseCode = "401",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Acesso não autorizado."),
+							@ApiResponse(responseCode = "404",
+								content = @Content(
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "Nenhum registro encontrado."),
+					})
 	public ResponseEntity<Page<Agendamento>> getAllAgendamentos(
-			@PageableDefault(page = 0, size = 5, sort = "id", direction = Direction.ASC) Pageable pageable) {
-		return ResponseEntity.ok().body(agendamentoService.findAll(pageable));		
+			@PageableDefault(page = 0, size = 5, sort = "id", direction = Direction.ASC) Pageable pageable) {	
+		Page<Agendamento> agendamentoPage = agendamentoService.findAll(pageable);
+		if (agendamentoPage.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+		return ResponseEntity.ok().body(agendamentoPage);
 	}
 	
 	@GetMapping("/{id}") 
+	@Operation(
+			tags = {"Agendamento"},
+			operationId = "getAgendamentoById",
+			summary = "Busca o agendamento pelo ID.",
+			description = "Busca o agendamento existente no banco de dados pelo ID.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+					responses = {
+							@ApiResponse(responseCode = "200",
+								content = @Content(
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "A busca foi realizada com sucesso."),
+							@ApiResponse(responseCode = "401",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Acesso não autorizado."),
+							@ApiResponse(responseCode = "404",
+								content = @Content(
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "Nenhum registro encontrado."),
+					})
 	public ResponseEntity<Object> getAgendamentoById(@PathVariable(name = "id") UUID id) {		
 		Agendamento agendamento = agendamentoService.findOneById(id).orElseThrow(
 				() -> new ResourceAccessException(AppMessages.AGENDAMENTO_NOT_FOUND));
@@ -75,6 +123,28 @@ public class AgendamentoController {
 	}
 	
 	@PostMapping
+	@Operation(
+			tags = {"Agendamento"},
+			operationId = "saveAgendamento",
+			summary = "Cria um agendamento.",
+			description = "Cria um agendamento no banco de dados.",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Objeto que será enviado no corpo da requisição."),
+			security = @SecurityRequirement(name = "BearerJWT"),
+					responses = {
+							@ApiResponse(responseCode = "201",
+								content = @Content(
+										schema = @Schema(implementation = AgendamentoDto.class),
+										mediaType = MediaType.APPLICATION_JSON_VALUE), 
+										description = "O registro foi criado com sucesso."),
+							@ApiResponse(responseCode = "400",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Algum campo requerido pode não ter sido passado no corpo da requisição, ou mal formatado."),
+							@ApiResponse(responseCode = "401",
+							content = @Content(
+									mediaType = MediaType.APPLICATION_JSON_VALUE), 
+									description = "Acesso não autorizado."),
+					})
 	public ResponseEntity<Response<AgendamentoDto>> saveAgendamento(@RequestBody @Valid AgendamentoDto agendamentoDto,
 			BindingResult result) {
 		
@@ -125,13 +195,40 @@ public class AgendamentoController {
 	}
 	
 	@PutMapping("/{id}")
+	@Operation(
+			tags = {"Agendamento"},
+			operationId = "updateAgendamento",
+			summary = "Atualiza o agendamento.",
+			description = "Atualiza o agendamento banco de dados.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Objeto que será enviado no corpo da requisição."),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = AgendamentoUpdateDto.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Registro alterado com sucesso."),
+					@ApiResponse(responseCode = "400",
+						content = @Content(
+								schema = @Schema(implementation = Response.class), 
+								mediaType = MediaType.APPLICATION_JSON_VALUE),
+								description = "Algum campo requerido pode não ter sido passado no corpo da requisição, ou mal formatado."),
+					@ApiResponse(responseCode = "401",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "O registro com o ID informado não foi encontrado."),
+			})
 	public ResponseEntity<Response<AgendamentoUpdateDto>> updateAgendamento(@PathVariable(name = "id") UUID id,
 			@RequestBody @Valid AgendamentoUpdateDto agendamentoUpdateDto, BindingResult result) {
 		
 		Response<AgendamentoUpdateDto> response = new Response<>();	
 		
 		if (VerificaDtoComErroValidacao.existeErroDeValidacao(response, result)) {
-			return ResponseEntity.badRequest().body(response);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 		
 		Agendamento agendamento = agendamentoService.findOneById(id).orElseThrow(
@@ -146,6 +243,27 @@ public class AgendamentoController {
 	}
 	
 	@DeleteMapping("/{id}")
+	@Operation(
+			tags = {"Agendamento"},
+			operationId = "deleteAgendamento",
+			summary = "Exclui o agendamento.",
+			description = "Exclui o agendamento no banco de dados.",
+			security = @SecurityRequirement(name = "BearerJWT"),
+			responses = {
+					@ApiResponse(responseCode = "200",
+						content = @Content(
+								schema = @Schema(implementation = String.class),
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "A busca das Unidades foi realizada com sucesso."),
+					@ApiResponse(responseCode = "401",
+						content = @Content(
+								mediaType = MediaType.APPLICATION_JSON_VALUE), 
+								description = "Acesso não autorizado."),
+					@ApiResponse(responseCode = "404",
+					content = @Content(
+							mediaType = MediaType.APPLICATION_JSON_VALUE), 
+							description = "O registro com o ID informado não foi encontrado."),
+			})
 	public ResponseEntity<String> deleteAgendamento(@PathVariable(name = "id") UUID id) {
 		
 		Agendamento agendamento = agendamentoService.findOneById(id).orElseThrow(
